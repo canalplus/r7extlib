@@ -92,7 +92,7 @@
       send('ready');
       callback.call(context);
       window.removeEventListener('load', boot);
-    });
+    }, false);
   }
 
   var R7 = {};
