@@ -55,6 +55,7 @@
         window.removeEventListener('message', getter);
       }
     }, false);
+    return id;
   }
 
   function grabKey(key, callback, context) {
