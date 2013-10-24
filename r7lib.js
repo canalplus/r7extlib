@@ -95,14 +95,14 @@
     });
   }
 
-  var r7 = {};
+  var R7 = {};
 
-  r7.send = send;
-  r7.rpc = rpc;
-  r7.grabKey = grabKey;
-  r7.releaseKey = releaseKey;
-  r7.onReadyState = onReadyState;
+  R7.send = send;
+  R7.rpc = rpc;
+  R7.grabKey = grabKey;
+  R7.releaseKey = releaseKey;
+  R7.onReadyState = onReadyState;
 
-  global.r7 = r7;
+  global.R7 = R7;
 
 })(this);
