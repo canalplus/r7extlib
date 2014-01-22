@@ -14,8 +14,8 @@ Install [Node.js](http://nodejs.org). Then install bower.
 npm install -g bower
 ```
 
-Then install test librairies (Mocha and Chai). Current directory must to project
-root.
+Then install test libraries (Mocha and Chai). Current directory must be the
+project root directory.
 
 ```shell
 bower install
