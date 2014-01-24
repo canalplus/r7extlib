@@ -14,7 +14,7 @@ describe('r7extlib', function() {
     }
     var methodNames = [
       'send', 'rpc', 'grabKey', 'releaseKey', 'onReadyState',
-      'addStreamListener'
+      'addStreamListener', 'removeStreamListener'
     ];
     methodNames.forEach(keyTest);
   });
