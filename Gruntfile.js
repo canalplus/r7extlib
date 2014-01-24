@@ -14,13 +14,34 @@ module.exports = function(grunt) {
     },
 
     open: {
-      file: {
+      testPage: {
         path: "./specs/index.html"
       }
     },
 
     clean: {
       tests: [TEST_LIBS_FOLDER]
+    },
+
+    jshint: {
+      gruntfileLint: {
+        files: {
+          src: ['./Gruntfile.js']
+        }
+      },
+      libLint: {
+        files: {
+          src: ['./lib/r7extlib.js']
+        }
+      },
+      testsLint: {
+        files: {
+          src: ['./specs/*.js']
+        },
+        options: {
+          expr: true
+        }
+      }
     }
 
   });
@@ -29,7 +50,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-bower-task');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
 
-  grunt.registerTask('test', ['bower:install', 'open:file']);
+  grunt.registerTask('test', [
+    'jshint:gruntfileLint', 'jshint:libLint', 'jshint:testsLint',
+    'bower:install', 'open:testPage'
+  ]);
 };
