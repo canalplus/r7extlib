@@ -1,6 +1,6 @@
 {
   "name": "r7extlib",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Easy interaction with Canal+ R7 box for external webapps",
   "main": "r7extlib.js",
   "scripts": {
