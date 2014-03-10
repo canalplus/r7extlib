@@ -7,12 +7,17 @@
 <body>
   <div id="mocha"></div>
 
-  <script src="../bower_components/mocha/mocha.js"></script>
-  <script>mocha.setup('bdd')</script>
-  <script src="../bower_components/chai/chai.js"></script>
-  <script src="../bower_components/sinon-chai/lib/sinon-chai.js"></script>
-  <script src="../bower_components/sinon/lib/sinon.js"></script>
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script>mocha.setup('bdd');</script>
+  <script>mocha.checkLeaks();</script>
 
+  <!-- chai for assertions -->
+  <script src="../node_modules/chai/chai.js"></script>
+  <script>expect = chai.expect;</script>
+
+  <!-- sinon for mocks and stubs -->
+  <script src="../node_modules/sinon-chai/lib/sinon-chai.js"></script>
+  <script src="../node_modules/sinon/pkg/sinon.js"></script>
   <script src="../lib/r7extlib.js"></script>
   <script src="./r7extlib_spec.js"></script>
 
