@@ -1,3 +1,6 @@
+# v0.1.2
+* Add bindings for listening to 'focus' and 'blur' events
+
 # v0.1.0
 
 * Use JSON-RPC2.0
