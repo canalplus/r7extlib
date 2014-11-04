@@ -1,3 +1,6 @@
+# v0.1.3
+* Add the volume keys to the bindable keys
+
 # v0.1.2
 * Add bindings for listening to 'focus' and 'blur' events
 
