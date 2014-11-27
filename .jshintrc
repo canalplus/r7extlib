@@ -1,0 +1,20 @@
+{
+  "browser": true,
+  "camelcase": true,
+  "curly": true,
+  "devel": true,
+  "eqeqeq": true,
+  "noarg": true,
+  "debug": true,
+  "trailing": false,
+  "strict": false,
+  "undef": true,
+  "expr": true,
+  "newcap": true,
+  "validthis": false,
+  "predef": [
+    "require",
+    "R7",
+    "describe","before","beforeEach","after","afterEach","it","xit","expect"
+  ]
+}
