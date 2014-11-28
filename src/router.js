@@ -195,7 +195,7 @@ function Router(iframe, origin) {
 
 var iframe;
 
-R7.loadIframe = function(options) {
+R7.loadIframe = function(options, callback, context) {
   var url = options.url;
 
   if (iframe) { return new Error('iframe: already loaded'); }
@@ -205,10 +205,13 @@ R7.loadIframe = function(options) {
     iframe = document.createElement('iframe');
     iframe.sandbox = SANDBOX;
     iframe.src = url;
+    iframe.style.display = 'none';
     document.body.appendChild(iframe);
   } else if (iframe.dataset.keys) {
     this.registerKeys(JSON.parse(iframe.dataset.keys));
   }
+
+  callback = _.bind(callback, context);
 
   var parsed = _.parseUri(url);
   var origin = parsed.protocol + '://' + parsed.authority;
@@ -216,10 +219,9 @@ R7.loadIframe = function(options) {
   var router = new Router(iframe, origin);
 
   var timeout;
-
   function load() {
     if (!iframe.dataset.loaded) {
-      timeout = setTimeout(this.unavailableError, READY_DELAY);
+      timeout = setTimeout(onTimeoutExpired, READY_DELAY);
       iframe.addEventListener('load', loaded, false);
     }
   }
@@ -229,7 +231,14 @@ R7.loadIframe = function(options) {
     router.use('ready', function() {
       clearTimeout(timeout);
       router.unuse('ready');
+      iframe.style.display = 'block';
+      callback();
     });
+  }
+
+  function onTimeoutExpired() {
+    iframe.removeEventListener('load', loaded, false);
+    callback(new Error('iframe: timeout expired'));
   }
 
   window.addEventListener('message', router, false);
