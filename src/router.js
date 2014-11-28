@@ -178,6 +178,9 @@ function Router(iframe, origin) {
     // then bind methods
     r.use('addStreamListener', addStreamListener);
     // r.use('navigate', ...);
+
+    R7.addStreamListener('focus', _.bind(broadcast, null, 'focus'));
+    R7.addStreamListener('blur', _.bind(broadcast, null, 'blur'));
   };
 
   r.unmount = function() {
