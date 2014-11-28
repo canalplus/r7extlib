@@ -9154,6 +9154,12 @@ function Router(iframe, origin) {
     };
   }
 
+  function addStreamListener(params) {
+    var type = params.source + ':' + params.event,
+        stream = 'stream:' + type;
+    R7.addStreamListener(type, _.bind(broadcast, null, stream));
+  }
+
   // list of all streamers forwarding events
   // var s = _.extend({}, EventEmitter);
 
@@ -9177,7 +9183,7 @@ function Router(iframe, origin) {
     // if (!s) { s = _.extend({}, EventEmitter); }
 
     // then bind methods
-    // r.use('addStreamListener', ...);
+    r.use('addStreamListener', addStreamListener);
     // r.use('navigate', ...);
   };
 
