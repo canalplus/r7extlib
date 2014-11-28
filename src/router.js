@@ -35,6 +35,18 @@ _.parseUri = function(str) {
   return u;
 };
 
+_.isSet = function(val) {
+  return typeof val !== 'undefined' && val !== null;
+};
+
+_.hashMap = function(array, val) {
+  val = _.isSet(val) ? val : true;
+  return _.reduce(array || [], function(obj, key) {
+    obj[key] = val;
+    return obj;
+  }, {});
+};
+
 function Router(iframe, origin) {
   var inProc = function(e) {
     if (e.source !== window && e.origin === origin) {
@@ -153,6 +165,16 @@ function Router(iframe, origin) {
     R7.addStreamListener(type, _.bind(broadcast, null, stream));
   }
 
+  function registerKeys(keys) {
+    if (!keys) { return; }
+    if (Array.isArray(keys)) {
+      keys = _.hashMap(keys, false);
+    }
+    for (var key in keys) {
+      R7.grabKey(key, _.bind(broadcast, null, 'key', key));
+    }
+  }
+
   // list of all streamers forwarding events
   // var s = _.extend({}, EventEmitter);
 
@@ -178,6 +200,8 @@ function Router(iframe, origin) {
     // then bind methods
     r.use('addStreamListener', addStreamListener);
     // r.use('navigate', ...);
+
+    r.use('addKeys', registerKeys);
 
     R7.addStreamListener('focus', _.bind(broadcast, null, 'focus'));
     R7.addStreamListener('blur', _.bind(broadcast, null, 'blur'));
