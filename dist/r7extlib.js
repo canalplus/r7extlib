@@ -9203,59 +9203,79 @@ function Router(iframe, origin) {
   return r;
 }
 
-var iframe;
+function R7IFrame() {
+  this.initialize.apply(this, arguments);
+}
 
-R7.loadIframe = function(options, callback, context) {
-  var url = options.url;
+R7IFrame.prototype =  {
+  initialize: function(options) {
+    var url = options.url;
 
-  if (iframe) { return new Error('iframe: already loaded'); }
-  // create the iframe
-  iframe = options.el;
-  if (!iframe) {
-    iframe = document.createElement('iframe');
-    iframe.sandbox = SANDBOX;
-    iframe.src = url;
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-  } else if (iframe.dataset.keys) {
-    this.registerKeys(JSON.parse(iframe.dataset.keys));
-  }
+    // create the iframe
+    var iframe = this.iframe = options.el;
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.sandbox = SANDBOX;
+      iframe.src = url;
 
-  callback = _.bind(callback, context);
+      iframe.style.display = 'none';
+      iframe.style.position = 'absolute';
+      iframe.style.width = '1280px';
+      iframe.style.height = '720px';
+      iframe.style.top = '0';
+      iframe.style.left = '0';
+      iframe.style.border = '0';
 
-  var parsed = _.parseUri(url);
-  var origin = parsed.protocol + '://' + parsed.authority;
+      document.body.appendChild(iframe);
 
-  var router = new Router(iframe, origin);
-
-  var timeout;
-  function load() {
-    if (!iframe.dataset.loaded) {
-      timeout = setTimeout(onTimeoutExpired, READY_DELAY);
-      iframe.addEventListener('load', loaded, false);
+      this.iframe = iframe;
+    } else if (iframe.dataset.keys) {
+      // this.registerKeys(JSON.parse(this.iframe.dataset.keys));
     }
-  }
 
-  function loaded() {
-    iframe.dataset.loaded = 'loaded';
-    router.use('ready', function() {
-      clearTimeout(timeout);
-      router.unuse('ready');
-      iframe.style.display = 'block';
+    var parsed = _.parseUri(url);
+    var origin = parsed.protocol + '://' + parsed.authority;
+
+    this.router = new Router(this.iframe, origin);
+  },
+
+  load: function(callback, context) {
+    window.addEventListener('message', this.router, false);
+
+    callback = _.bind(callback, context);
+    if (!this.iframe.dataset.loaded) {
+      this.timeout = setTimeout(_.bind(this.onTimeoutExpired, this, callback), READY_DELAY);
+      this.iframe.addEventListener('load', _.bind(this.loaded, this, callback), false);
+    }
+  },
+
+  loaded: function(callback) {
+    this.iframe.dataset.loaded = 'loaded';
+    this.router.use('ready', _.bind(function() {
+      clearTimeout(this.timeout);
+      this.router.unuse('ready');
+      this.iframe.style.display = 'block';
       callback();
-    });
-  }
+    }, this));
+  },
 
-  function onTimeoutExpired() {
-    iframe.removeEventListener('load', loaded, false);
+  onTimeoutExpired: function(callback) {
+    this.iframe.removeEventListener('load', this.loaded, false);
+    this.unload();
     callback(new Error('iframe: timeout expired'));
+  },
+
+  unload: function() {
+    window.removeEventListener('message', this.router, false);
+    this.iframe.style.display = 'none';
   }
+};
 
-  window.addEventListener('message', router, false);
-  load();
-
-  // router.use('addKeys', this.registerKeys, this);
-  // router.use('removeKeys', this.unregisterKeys, this);
+var r7iframe;
+R7.loadIframe = function(options, callback, context) {
+  if (r7iframe) { console.error('iframe: already loaded'); return; }
+  r7iframe = new R7IFrame(options);
+  r7iframe.load(callback, context);
 };
 
 },{"lodash":2,"q":3}]},{},[4])
