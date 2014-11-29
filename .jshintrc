@@ -7,7 +7,7 @@
   "noarg": true,
   "debug": true,
   "trailing": false,
-  "strict": false,
+  "strict": true,
   "undef": true,
   "expr": true,
   "newcap": true,

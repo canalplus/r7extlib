@@ -5,41 +5,35 @@
       argv = require('yargs').argv,
       jshint = require('gulp-jshint'),
       rimraf = require('gulp-rimraf'),
-      concat = require('gulp-concat'),
       browserify = require('gulp-browserify'),
+      rename = require('gulp-rename'),
       mochaPhantomJS = require('gulp-mocha-phantomjs');
 
   gulp.task('clean', function() {
     return gulp
-      .src(['./tmp'], { read: false })
+      .src(['tmp', 'dist/r7extlib.js'], { read: false })
       .pipe(rimraf());
   });
 
   gulp.task('lint', function() {
     return gulp
-      .src(['gulpfile.js', './src/*.js'])
+      .src(['gulpfile.js', 'src/*.js'])
       .pipe(jshint())
       .pipe(jshint.reporter('default'))
       .pipe(jshint.reporter('fail'));
   });
 
-  gulp.task('concat', function() {
-    return gulp
-      .src(['./src/index.js', './src/*.js'])
-      .pipe(concat('r7extlib.js'))
-      .pipe(gulp.dest('./tmp/'));
-  });
-
   gulp.task('browserify', function() {
     return gulp
-      .src('./tmp/r7extlib.js')
+      .src('src/index.js')
       .pipe(browserify())
-      .pipe(gulp.dest('./dist/'));
+      .pipe(rename('r7extlib.js'))
+      .pipe(gulp.dest('dist/'));
   });
 
   gulp.task('test', function() {
     return gulp
-      .src('./specs/index.html')
+      .src('specs/index.html')
       .pipe(mochaPhantomJS({
         mocha: {
           grep: argv['test-grep']
@@ -48,6 +42,6 @@
       }));
   });
 
-  gulp.task('default', ['lint', 'concat', 'browserify', 'clean']);
+  gulp.task('default', ['clean', 'lint', 'browserify']);
 
 })();
