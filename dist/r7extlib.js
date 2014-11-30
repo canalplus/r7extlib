@@ -9184,6 +9184,17 @@ return Q;
       R7.addStreamListener(type, _.bind(broadcast, null, stream));
     }
 
+    function navigate(params) {
+      var route = params.control,
+          context = params.options;
+      return Q.Promise(function(resolve, reject) {
+        R7.navigate(route, context, function(error, result) {
+          if (error) { reject(error); }
+          resolve(result);
+        });
+      });
+    }
+
     function registerKeys(keys) {
       if (!keys) { return; }
       if (Array.isArray(keys)) {
@@ -9229,7 +9240,7 @@ return Q;
 
       // then bind methods
       r.use('addStreamListener', addStreamListener);
-      // r.use('navigate', ...);
+      r.use('navigate', navigate);
 
       r.use('addKeys', registerKeys);
       r.use('removeKeys', unregisterKeys);
