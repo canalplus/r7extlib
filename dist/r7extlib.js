@@ -9287,7 +9287,7 @@ return Q;
 
         document.body.appendChild(iframe);
 
-        this.iframe = iframe;
+        this.iframe = null;
       } else if (iframe.dataset.keys) {
         // this.registerKeys(JSON.parse(this.iframe.dataset.keys));
       }
@@ -9326,7 +9326,9 @@ return Q;
 
     unload: function() {
       window.removeEventListener('message', this.router, false);
-      this.iframe.style.display = 'none';
+      document.body.removeChild(this.iframe);
+      this.router.dispose();
+      delete this.router;
     }
   };
 
@@ -9335,6 +9337,12 @@ return Q;
     if (r7iframe) { console.error('iframe: already loaded'); return; }
     r7iframe = new R7IFrame(options);
     r7iframe.load(callback, context);
+  };
+  exports.unloadIframe = function(callback, context) {
+    if (!r7iframe) { console.warn('iframe: not loaded'); return; }
+    r7iframe.unload();
+    r7iframe = null;
+    callback.call(context);
   };
 
 }) (this);
