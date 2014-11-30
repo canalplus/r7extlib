@@ -9194,6 +9194,17 @@ return Q;
       }
     }
 
+    function unregisterKeys(keys) {
+      if (!keys) { return; }
+      if (!Array.isArray(keys)) {
+        keys = Object.keys(keys);
+      }
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        R7.releaseKey(key);
+      }
+    }
+
     // list of all streamers forwarding events
     // var s = _.extend({}, EventEmitter);
 
@@ -9221,6 +9232,7 @@ return Q;
       // r.use('navigate', ...);
 
       r.use('addKeys', registerKeys);
+      r.use('removeKeys', unregisterKeys);
 
       R7.addStreamListener('focus', _.bind(broadcast, null, 'focus'));
       R7.addStreamListener('blur', _.bind(broadcast, null, 'blur'));
