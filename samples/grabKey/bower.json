@@ -1,0 +1,21 @@
+{
+  "name": "R7SampleApp",
+  "version": "0.0.0",
+  "authors": [
+    "Sylvain Bekaert <sylvain.bekaert@gmail.com>"
+  ],
+  "description": "Sample application for grabbing keys on Canal+ R7 STB",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "r7extlib": "http://github.com/canalplus/r7extlib.git#~0.1.3",
+    "lodash": "~2.4.1"
+  }
+}
