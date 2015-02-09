@@ -6,6 +6,10 @@
         font-family: "CanalDR";
         src: url('assets/fonts/CanalDemiRomainG7.otf') format('opentype');
       }
+      @font-face {
+        font-family: "CanalRC";
+        src: url('assets/fonts/CanalRC.otf') format('opentype');
+      }
 
       body {
         font-family: "CanalDR";
@@ -25,12 +29,17 @@
 
       #key {
         font-size: 90px;
-        height: 116px;
+        font-family: "CanalRC";
+        height: 136px;
         position: absolute;
         top: 0; bottom: 0; left: 0; right: 0;
         margin: auto;
         text-align: center;
         transition: opacity 0.2s;
+      }
+
+      #key.arrow {
+        font-family: "CanalDR";
       }
 
     </style>
@@ -41,52 +50,54 @@
     <div id="main">
       <h2>SAMPLE APPLICATION FOR &#xe001; R7 STB</h2>
       <p>Please press any key...</p>
-      <p id="key">&#xf0d1;</p>
+      <p id="key"></p>
     </div>
   </body>
   <script type="text/javascript">
   (function() {
     'use strict';
 
-    var keys = {
-      Up: '&#xe004;',
-      Down: '&#xe005;',
-      Right: '&#xe002;',
-      Left: '&#xe003;',
-      Enter: 'OK',
-      Mute: '&#xf0d1;',
-      Zoom: 'ZOOM',
-      Back: 'RETOUR',
-      Exit: 'SORTIE',
-      Guide: 'GUIDE',
-      Menu: 'MENU',
-      Rewind: '&#xf010;',
-      Play: '&#xf06b;',
-      Forward: '&#xf00f;',
-      Stop: '&#xf00e;',
-      Pause: '&#xf00d;',
-      Rec: '&#xf075;',
-      TV: 'TV'
-    };
+    var keys = [
+      { key: 'TV', text: 'a' },
+      { key: 'Enter', text: 'c' },
+      { key: 'Back', text: 'd' },
+      { key: 'Exit', text: 'e' },
+      { key: 'Menu', text: 'f' },
+      { key: 'Guide', text: 'g' },
+      { key: 'Zoom', text: 'j' },
+      { key: 'TV', text: 'a' },
+      { key: 'Up', text: '&#xe004;', className: 'arrow' },
+      { key: 'Down', text: '&#xe005;', className: 'arrow' },
+      { key: 'Right', text: '&#xe002;', className: 'arrow' },
+      { key: 'Left', text: '&#xe003;', className: 'arrow' },
+      { key: 'Mute', text: 'k' },
+      { key: 'Rewind', text: 'n' },
+      { key: 'Play', text: 'o' },
+      { key: 'Forward', text: 'p' },
+      { key: 'Stop', text: 'q' },
+      { key: 'Pause', text: 'r' },
+      { key: 'Rec', text: 's' }
+    ];
 
     var elem = document.getElementById('key');
     var timer = null, delay = 3E3;
     var hideKey = function() {
       elem.style.opacity = 0;
     };
-    var displayKey = function(text) {
-      timer && clearTimeout(timer);
-      elem.innerHTML = text;
+    var displayKey = function(obj) {
+      if (timer) { clearTimeout(timer); }
+      elem.className = !!obj.className ? obj.className : '';
+      elem.innerHTML = obj.text;
       elem.style.opacity = 1;
       timer = window.setTimeout(hideKey, delay);
     };
 
     var onR7ready = function() {
       //bind keys
-      for (var key in keys) {
-        R7.grabKey(key, _.bind(displayKey, null, keys[key]));
-      }
-      R7.grabKey('Numeric', function(obj) { displayKey('KEY ' + obj.number); });
+      keys.forEach(function(o) {
+        R7.grabKey(o.key, _.bind(displayKey, null, o));
+      });
+      R7.grabKey('Numeric', function(obj) { displayKey({ text: obj.number }); });
     };
 
     R7.ready(onR7ready);
