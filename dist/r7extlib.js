@@ -9033,7 +9033,16 @@ return Q;
        * Delay for a remote service to load
        * @type {Number}
        */
-      READY_DELAY = 45 * 1000;
+      READY_DELAY = 45 * 1000,
+      /**
+       * Default style properties for iframe
+       */
+      IFRAME_STYLE = {
+        display: 'none',
+        width: '1280px',
+        height: '720px',
+        border: '0'
+      };
 
   _.parseUri = function(str) {
     var uParser = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
@@ -9271,26 +9280,23 @@ return Q;
       var url = options.url;
 
       // create the iframe
-      var iframe = this.iframe = options.el;
+      var iframe = this.iframe;
       if (!iframe) {
         iframe = document.createElement('iframe');
         iframe.sandbox = SANDBOX;
         iframe.src = url;
 
-        iframe.style.display = 'none';
-        iframe.style.position = 'absolute';
-        iframe.style.width = '1280px';
-        iframe.style.height = '720px';
-        iframe.style.top = '0';
-        iframe.style.left = '0';
-        iframe.style.border = '0';
-
-        document.body.appendChild(iframe);
-
-        this.iframe = null;
+        var style = _.extend(IFRAME_STYLE, options.style);
+        for (var property in style) {
+          iframe.style[property] = style[property];
+        }
       } else if (iframe.dataset.keys) {
         // this.registerKeys(JSON.parse(this.iframe.dataset.keys));
       }
+
+      this.iframe = iframe;
+
+      this.el = options.el || document.body;
 
       var parsed = _.parseUri(url);
       var origin = parsed.protocol + '://' + parsed.authority;
@@ -9299,12 +9305,13 @@ return Q;
     },
 
     load: function(callback, context) {
-      window.addEventListener('message', this.router, false);
-
       callback = _.bind(callback, context);
+
       if (!this.iframe.dataset.loaded) {
         this.timeout = setTimeout(_.bind(this.onTimeoutExpired, this, callback), READY_DELAY);
+        window.addEventListener('message', this.router, false);
         this.iframe.addEventListener('load', _.bind(this.loaded, this, callback), false);
+        this.el.appendChild(this.iframe);
       }
     },
 
@@ -9319,15 +9326,14 @@ return Q;
     },
 
     onTimeoutExpired: function(callback) {
-      this.iframe.removeEventListener('load', this.loaded, false);
       this.unload();
       callback(new Error('iframe: timeout expired'));
     },
 
     unload: function() {
+      this.el.removeChild(this.iframe);
       window.removeEventListener('message', this.router, false);
-      document.body.removeChild(this.iframe);
-      this.router.dispose();
+      this.iframe.removeEventListener('load', this.loaded, false);
       delete this.router;
     }
   };
