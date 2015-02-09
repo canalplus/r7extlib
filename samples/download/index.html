@@ -1,0 +1,111 @@
+<html>
+  <head>
+    <title>Sample app for downloading video on Canal+ R7 STB</title>
+    <style type="text/css">
+      @font-face {
+        font-family: "CanalDR";
+        src: url('assets/fonts/CanalDemiRomainG7.otf') format('opentype');
+      }
+
+      body {
+        background-color: rgb(0,0,0);
+        margin: 0;
+      }
+
+      #main {
+        width: 1200px;
+        height: 704px;
+        padding: 8px 40px;
+        background-color: rgb(255,255,255);
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        margin: auto;
+      }
+
+      h2 {
+        font-family: "CanalDR";
+      }
+
+      .warning {
+        color: orange;
+      }
+
+      .error {
+        color: red;
+      }
+    </style>
+    <script type="text/javascript" src="bower_components/r7extlib/lib/r7extlib.js"></script>
+  </head>
+  <body>
+    <div id="main">
+      <h2>SAMPLE APPLICATION FOR &#xe001; R7 STB</h2>
+      <p class="message">Press OK to start the download and the playback of the video.</p>
+      <p class="error"></p>
+      <p class="warning">If your video has already been downloaded to your STB, you can remove it on the 99th channel MES VIDEOS.<br/>Otherwise, the STB will play the already downloaded video without downloading a new one.</p>
+    </div>
+  </body>
+  <script type="text/javascript">
+  (function() {
+    'use strict';
+
+    var
+      URI = 'http://http-od-l3.canal-plus.com/ondemand/CanalPlus/h264/cpl000011777-ant-1166397-1.ts',
+      LICENSE = 'IKEBAABT\/AFs49O\/\/\/\/\/\/1hHJ71yKMLXYrfGn5s+bOHufDB5VX8nA0aJ+s6HtJ65cvZ1fq1npO\/rq0oYHZru9KY2XbdmBzifjXdzBdh3g47smaedGdMu5fqtoInsZG7kWM9EKJ1EenHbNgx+m\/B74DNErMlqybddFYFySNrK25BB\/Nk1FIETKt95y3ITlSbkmgzLnBZa8p43+bPDfeQjDvMIVtDThwQnGvHkvVCpuAl+EOeb6NxYyu6PvE8GJNHgD779uN6M8GUHmwM8OVOfhd8EpZBuqp+ckN8BZA2x3PJ+HwgV5BiRNv5tCTl18quS0wzzOFwb65i8Wm8DhJwMkkaOhxDFb2SCeUEjBWtnHq3BT2VRZiy6ww\/mbLwGUOKil2dtCtmPqc7phKTU4zOjOMR1pYFuXtN5rbxji9WZqP8DcWwlsUQSGX27C+yknaim4e8gUYcjVc3I8wwtEdY4KoFVup3wQVeicpwFYfCJrscRtRcxMmxF+SfZ8W4xN\/sLHOGmmRM9Rb3+8MGq+YwBCdh\/BxfzZV\/J9hQoDrlc2RoII6mo66fF1Mjpk5Km6JfaAXY58zLNwZHQq\/HEup05O5SCcX956aQasAKNqiGteSTxLdIQLWu9EuU851mfD6axID1oOU+Ueu6d17PKvRPu8IN5l8qT\/xKMchMbb\/4dWywloQEAADH\/AbneZrWvFlFCm3mJugwdSUD9bFBn0AO+8KUxxqRmOc0DepH\/QvOPIRwquP9+7ypWMr+E1+RyP\/YyvDotSVeE9MVKGHuCPQFOqQC9kreAxWfNeo3lg5Zyi+NcCBN+oI9YLLFiaQW9fCECENL2z1lKVt+JXnrTCaU7mFZA6F\/CnmjHUJCXJXel872R15gzq+Ll4hlWW9uFbcS4sA0Mh8vgv\/BDUNrqSPfLD98Ka0i1u\/n4QsxZpYHQgTgl2sgoHPUjOgFiI0Uo0265raSxB53MTHFJfN1a1z34+WaOvmtBJShnVeLfy92OM0JEQzh5ZJOAfDhf7OS7MBHdevdQ1oPnW6WhZC5iWmRTvCRwfIcd3eUKmYJmxRc7pwrqbuPrjsnrwgeyWCP25jhSuCj3zheXVGf7UPjEa8tMtdf+zYIIhr963P9TsOTqyWr7qOaUuqC\/s2p5njT01MuW8hHAiJt5v+HvDOiDtEyR1fUbZqbtC0L1fDnxqKg7x3h1oeXlDreJyWwBt3TDqQfwYNO+2ERwTGwynWe\/GdBcmHOUIc0wl6Tg5jC8jDWR53zLbvdT7mEIaYUtCPmV+UhnCkZopzyPRaWBQJnpkyVCjj8kHrl8js41PRGaB0hyaCUpGiWDx35jTCSXPky5AFuxaMj8DZUjfFjzgIPOQB6u4w==',
+      METADATA = {
+        titleLbl: 'Captain America : le soldat de l\'hiver',
+        duration: 7800000,
+        shortSummary:  'Steve Rogers, alias Captain America, s\'est installé à Washington D.C. où il tente de s\'adapter au monde moderne. Lorsqu\'un nouvau complot menace la planète, il s\'associe à la Veuve noire et à un nouvel allié, le Faucon, pour affronter un inattendu et impitoyable adversaire nommé Soldat de l\'Hiver...',
+        genreName:    'Cinéma',
+        std169Image:  'http://image.canal-plus.com/media_cpa/img/movie/default/188_105/jpg/ANT_1166397_1_188_105.jpg',
+        channelName: 'CANAL+',
+        country: 'Etats-Unis'
+      };
+
+    // var
+    //   URI = '<YOUR LICENSE HERE>', //Content uri
+    //   LICENSE = '<YOUR LICENSE HERE>', //Base64 encoded license.
+    //   METADATA = {
+    //     titleLbl: '', //Main title
+    //     duration: 0,  //in milliseconds
+    //     subtitleLbl:  '',// Subtitle
+    //     genreName:    '',// Like "Cinéma", "Humour" ...
+    //     std169Image:  '',// 188 x 105 jpeg
+    //     shortSummary: '',// Displayed on fiche infos
+    //     summary:      ''// Displayed on STB detail card > more info
+    //   }; // See the program's metadata page http://api.canallabs.fr/api/Program.html
+
+    var error = function(err) {
+      document.querySelector('p.message').innerHTML = '';
+      document.querySelector('p.warning').innerHTML = '';
+      document.querySelector('p.error').innerHTML = err.message;
+      console.error(err);
+    };
+
+    var message = function(txt) {
+      document.querySelector('p.warning').innerHTML = '';
+      document.querySelector('p.error').innerHTML = '';
+      document.querySelector('p.message').innerHTML = txt;
+    };
+
+    var download = function() {
+      message('Downloading ' + METADATA.titleLbl || '');
+      R7('download', {
+        uri: URI,
+        license: LICENSE,
+        metadata: METADATA
+      }, function(err, content) {
+        if (err) { return error(err); }
+        message('Start playing ' + METADATA.titleLbl || '');
+        R7.navigate('video_player', content, function(err) {
+          if (err) { error(err); }
+          else {
+            // Playing...
+          }
+        });
+      });
+    };
+
+    R7.ready(function() { R7.grabKey('Enter', download); });
+  }) ();
+  </script>
+</html>
