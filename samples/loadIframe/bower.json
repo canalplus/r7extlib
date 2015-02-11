@@ -1,0 +1,22 @@
+{
+  "name": "R7SampleApp",
+  "version": "0.0.0",
+  "authors": [
+    "Sylvain Bekaert <sylvain.bekaert@gmail.com>"
+  ],
+  "description": "Sample application for loading application in an iframe on Canal+ R7 STB",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "r7extlib": "https://github.com/canalplus/r7extlib.git#feature/loadIframe",
+    "lodash": "~2.4.1",
+    "mickey.js": "https://github.com/canalplus/mickey.js.git"
+  }
+}

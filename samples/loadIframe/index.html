@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Sample app for loading new iFrame app on Canal+ R7 STB</title>
+    <style type="text/css">
+      @font-face {
+        font-family: "CanalDR";
+        src: url('assets/fonts/CanalDemiRomainG7.otf') format('opentype');
+      }
+
+      body {
+        background-color: rgba(255,255,255, 0.7);
+        color: black;
+        margin: 0px 40px;
+      }
+
+      h2 {
+        font-family: "CanalDR";
+      }
+
+      .error {
+        color: red;
+      }
+    </style>
+    <script type="text/javascript" src="bower_components/r7extlib/dist/r7extlib.js"></script>
+  </head>
+  <body>
+    <h2>SAMPLE APPLICATION FOR &#xe001; R7 STB</h2>
+    <p>Press OK to lauch the remote application in an iframe.</p>
+    <script type="text/javascript">
+    (function() {
+      'use strict';
+
+      var
+        /* Pass the url you want to the iframe */
+        URI = 'iframe.html';
+
+      var error = function(err) {
+        document.querySelector('p').innerHTML = err.message;
+        document.querySelector('p').className = 'error';
+        console.error(err);
+      };
+      var message = function(txt) {
+        document.querySelector('p').innerHTML = txt;
+        document.querySelector('p').className = '';
+      };
+
+      var loadIframe = function () {
+        var now = new Date();
+        R7.loadIframe({
+          url: URI,
+          style: {
+            width: '1200px',
+            height: '600px'
+          }
+        }, function(err) {
+          if (err) { return error(err); }
+          var time = ((new Date()).getTime() - now.getTime()) / 1e3;
+          message('The remote application is loaded and ready in ' + time + 's');
+        });
+      };
+
+      R7.ready(function() { R7.grabKey('Enter', loadIframe); });
+    })();
+    </script>
+  </body>
+</html>
