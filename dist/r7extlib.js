@@ -9309,16 +9309,17 @@ return Q;
 
     load: function(callback, context) {
       callback = _.bind(callback, context);
-
+      this._loaded = _.bind(this.loaded, this, callback);
       if (!this.iframe.dataset.loaded) {
         this.timeout = setTimeout(_.bind(this.onTimeoutExpired, this, callback), READY_DELAY);
         window.addEventListener('message', this.router, false);
-        this.iframe.addEventListener('load', _.bind(this.loaded, this, callback), false);
+        this.iframe.addEventListener('load', this._loaded, false);
         this.el.appendChild(this.iframe);
       }
     },
 
     loaded: function(callback) {
+      this.iframe.removeEventListener('load', this._loaded, false);
       this.iframe.dataset.loaded = 'loaded';
       this.router.use('ready', _.bind(function() {
         clearTimeout(this.timeout);
@@ -9336,8 +9337,9 @@ return Q;
     unload: function() {
       this.el.removeChild(this.iframe);
       window.removeEventListener('message', this.router, false);
-      this.iframe.removeEventListener('load', this.loaded, false);
+      this.iframe.removeEventListener('load', this._loaded, false);
       delete this.router;
+      delete this._loaded;
     }
   };
 
