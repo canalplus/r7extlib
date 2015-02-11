@@ -29,12 +29,15 @@
       };
 
   _.parseUri = function(str) {
+    var parser = document.createElement('a');
+    parser.href = str;
+
     var uParser = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
     var qParser = /(?:^|&)([^&=]*)=?([^&]*)/g;
     var keys = ['source','protocol','authority','userInfo','user','password','host','port','relative','path','directory','file','query','anchor'];
 
     var u = {}, i = keys.length;
-    var m = uParser.exec(str);
+    var m = uParser.exec(parser.href);
     while (i--) {
       u[keys[i]] = m[i] || '';
     }
