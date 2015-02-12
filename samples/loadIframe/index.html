@@ -22,19 +22,40 @@
       .error {
         color: red;
       }
+
+      button {
+        display: inline-block;
+        padding: 7px 13px 8px 15px;
+        min-width: 193px;
+        margin-left: -3px;
+        text-transform: uppercase;
+        text-align: center;
+        color: rgb(255, 255, 255);
+        font: normal 18px/20px "CanalDR";
+        border: 3px solid transparent;
+        background-color: rgb(204, 204, 204);
+        background-clip: padding-box;
+        -webkit-box-sizing: content-box;
+      }
+      button.hover {
+        border: 3px solid rgba(0,0,0,0.8) !important;
+      }
+
     </style>
+    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="bower_components/mickey.js/dist/mickey.js"></script>
     <script type="text/javascript" src="bower_components/r7extlib/dist/r7extlib.js"></script>
   </head>
   <body>
     <h2>SAMPLE APPLICATION FOR &#xe001; R7 STB</h2>
     <p>Press OK to lauch the remote application in an iframe.</p>
+    <article data-nav-area="button">
+      <button data-url="iframe.html">iframe.html</button>
+      <button data-url="iframe2.html">iframe2.html</button>
+    </article>
     <script type="text/javascript">
     (function() {
       'use strict';
-
-      var
-        /* Pass the url you want to the iframe */
-        URI = 'iframe.html';
 
       var error = function(err) {
         document.querySelector('p').innerHTML = err.message;
@@ -46,10 +67,11 @@
         document.querySelector('p').className = '';
       };
 
-      var loadIframe = function () {
+      var loadIframe = function (e) {
+        var url = e.target.dataset.url;
         var now = new Date();
         R7.loadIframe({
-          url: URI,
+          url: url,
           style: {
             width: '1200px',
             height: '600px'
@@ -60,8 +82,14 @@
           message('The remote application is loaded and ready in ' + time + 's');
         });
       };
+      document.querySelector('article').addEventListener('click', loadIframe, false);
 
-      R7.ready(function() { R7.grabKey('Enter', loadIframe); });
+      R7.ready(function() {
+        var mickey = new Mickey(document.body).init();
+        R7.grabKey('Left', function() { mickey.move('left'); });
+        R7.grabKey('Right', function() { mickey.move('right'); });
+        R7.grabKey('Enter', function() { mickey.click(); });
+      });
     })();
     </script>
   </body>

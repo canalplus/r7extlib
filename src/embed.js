@@ -294,6 +294,7 @@
     load: function(callback, context) {
       callback = _.bind(callback, context);
       this._loaded = _.bind(this.loaded, this, callback);
+
       if (!this.iframe.dataset.loaded) {
         this.timeout = setTimeout(_.bind(this.onTimeoutExpired, this, callback), READY_DELAY);
         window.addEventListener('message', this.router, false);
@@ -305,6 +306,7 @@
     loaded: function(callback) {
       this.iframe.removeEventListener('load', this._loaded, false);
       this.iframe.dataset.loaded = 'loaded';
+
       this.router.use('ready', _.bind(function() {
         clearTimeout(this.timeout);
         this.router.unuse('ready');
@@ -314,7 +316,6 @@
     },
 
     onTimeoutExpired: function(callback) {
-      this.unload();
       callback(new Error('iframe: timeout expired'));
     },
 
@@ -327,17 +328,6 @@
     }
   };
 
-  var r7iframe;
-  exports.loadIframe  = function(options, callback, context) {
-    if (r7iframe) { console.error('iframe: already loaded'); return; }
-    r7iframe = new R7IFrame(options);
-    r7iframe.load(callback, context);
-  };
-  exports.unloadIframe = function(callback, context) {
-    if (!r7iframe) { console.warn('iframe: not loaded'); return; }
-    r7iframe.unload();
-    r7iframe = null;
-    callback.call(context);
-  };
+  exports.R7IFrame = R7IFrame;
 
 }) (this);

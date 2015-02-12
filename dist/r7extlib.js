@@ -8794,226 +8794,6 @@ return Q;
 
 }).call(this,require("1YiZ5S"))
 },{"1YiZ5S":1}],4:[function(require,module,exports){
-(function() {
-    'use strict';
-
-  var VERSION = '0.1.3';
-
-  var router = require('./router');
-
-  function noop() {}
-
-  function _bind(callback, context) {
-    callback = callback || noop;
-    if (!context) { return callback; }
-    return function bound() {
-      return callback.apply(context, arguments);
-    };
-  }
-
-  function _deprecate(name, fn) {
-    return function() {
-      console.warn('R7 deprecated method ' + name);
-      return fn.apply(null, arguments);
-    };
-  }
-
-  var AVAILABLE_KEYS = {
-    Up:       true,
-    Down:     true,
-    Right:    true,
-    Left:     true,
-    Enter:    true,
-    Mute:     true,
-    Vdown:    true,
-    Vup:      true,
-    Zoom:     true,
-    Back:     true,
-    Exit:     true,
-    Guide:    true,
-    Menu:     true,
-    Numeric:  true,
-    Rewind:   true,
-    Play:     true,
-    Forward:  true,
-    Stop:     true,
-    Pause:    true,
-    Rec:      true,
-    TV:       true
-  };
-
-  var _rpcs = {};
-  var _keys = {};
-  var _streams = {};
-
-  function getKey(key) {
-    if (typeof key === 'object') {
-      key = Object.keys(key)[0];
-    }
-    if (!AVAILABLE_KEYS[key]) {
-      throw new Error('non available key');
-    }
-    return key;
-  }
-
-  function streamParams(type) {
-    var m = type.match(/(\w+):(\w+)/);
-    return { source: m[1], event: m[2] };
-  }
-
-  var handlers = {
-    rpc: function(msg) {
-      var id = msg.id;
-      var cb = _rpcs[id];
-      if (!cb) { return; }
-      if (!msg.id || !(msg.hasOwnProperty('error') || msg.hasOwnProperty('result'))) {
-        return;
-      }
-      delete _rpcs[id];
-      if (msg.error) {
-        cb(new Error(msg.error.message));
-      } else {
-        cb(null, msg.result);
-      }
-    },
-
-    key: function(msg) {
-      var key = msg.key;
-      var res = key.match(/Numeric([0-9])/i);
-      if (res) {
-        key = 'Numeric';
-        msg.number = +res[1];
-      }
-      var cb = _keys[key];
-      if (!cb) { return; }
-      cb(msg);
-    },
-
-    stream: function(msg) {
-      for (var key in msg) {
-        if (!_streams[key]) { continue; }
-        var cb = _streams[key];
-        cb(msg[key]);
-      }
-    }
-  };
-
-  function onMessage(evt) {
-    var msg = evt.data;
-    if (msg.id)  { return handlers.rpc(msg); }
-    if (msg.key) { return handlers.key(msg); }
-    return handlers.stream(msg);
-  }
-
-  var send = function() {
-    var uid = 1;
-    return function(method, params) {
-      window.parent.postMessage({
-        jsonrpc: '2.0',
-        id: uid,
-        method: method,
-        params: params
-      }, '*');
-      return uid++;
-    };
-  }();
-
-  // !! DEPRECATED !! do not handle errors
-  function deprecatedRPC(method, params, callback, context) {
-    if (typeof params === 'function') {
-      context  = callback;
-      callback = params;
-      params   = null;
-    }
-
-    callback = _bind(callback, context);
-
-    var uid = send(method, params);
-    _rpcs[uid] = function(err, res) {
-      callback(err || res);
-    };
-
-    return uid;
-  }
-
-  function rpc(method, params, callback, context) {
-    if (typeof params === 'function') {
-      context  = callback;
-      callback = params;
-      params   = null;
-    }
-
-    var uid = send(method, params);
-    _rpcs[uid] = _bind(callback, context);
-
-    return uid;
-  }
-
-  function navigate(route, options, callback, context) {
-    return rpc('navigate', {
-      control: route,
-      context: options
-    }, callback, context);
-  }
-
-  function grabKey(key, callback, context) {
-    var k = getKey(key);
-    if (typeof key === 'object') {
-      send('addKeys', key);
-    } else {
-      send('addKeys', [k]);
-    }
-    _keys[k] = _bind(callback, context);
-  }
-
-  function releaseKey(key) {
-    key = getKey(key);
-    delete _keys[key];
-    send('removeKeys', [key]);
-  }
-
-  function ready(callback, context) {
-    window.addEventListener('load', function() {
-      rpc('ready', _bind(callback, context));
-    }, false);
-  }
-
-  function addStreamListener(type, callback, context) {
-    if (type === 'focus' || type === 'blur') {
-      _streams[type] = _bind(callback, context);
-    } else {
-      send('addStreamListener', streamParams(type));
-      _streams['stream:' + type] = _bind(callback, context);
-    }
-  }
-
-  function R7(method, params, callback, context) {
-    return rpc(method, params, callback, context);
-  }
-
-  R7.version = VERSION;
-
-  R7.ready      = ready;
-  R7.grabKey    = grabKey;
-  R7.releaseKey = releaseKey;
-  R7.navigate   = navigate;
-
-  R7.addStreamListener = addStreamListener;
-
-  // Deprecated methods
-  R7.rpc          = _deprecate('rpc',  deprecatedRPC);
-  R7.send         = _deprecate('send', deprecatedRPC);
-  R7.onReadyState = _deprecate('onReadyState', ready);
-
-  R7.loadIframe = router.loadIframe;
-
-  // Bind global handler
-  window.addEventListener('message', onMessage, false);
-
-  window.R7 = R7;
-
-}) ();
-},{"./router":5}],5:[function(require,module,exports){
 (function(exports) {
   'use strict';
 
@@ -9310,6 +9090,7 @@ return Q;
     load: function(callback, context) {
       callback = _.bind(callback, context);
       this._loaded = _.bind(this.loaded, this, callback);
+
       if (!this.iframe.dataset.loaded) {
         this.timeout = setTimeout(_.bind(this.onTimeoutExpired, this, callback), READY_DELAY);
         window.addEventListener('message', this.router, false);
@@ -9321,6 +9102,7 @@ return Q;
     loaded: function(callback) {
       this.iframe.removeEventListener('load', this._loaded, false);
       this.iframe.dataset.loaded = 'loaded';
+
       this.router.use('ready', _.bind(function() {
         clearTimeout(this.timeout);
         this.router.unuse('ready');
@@ -9330,7 +9112,6 @@ return Q;
     },
 
     onTimeoutExpired: function(callback) {
-      this.unload();
       callback(new Error('iframe: timeout expired'));
     },
 
@@ -9343,18 +9124,258 @@ return Q;
     }
   };
 
-  var r7iframe;
-  exports.loadIframe  = function(options, callback, context) {
-    if (r7iframe) { console.error('iframe: already loaded'); return; }
-    r7iframe = new R7IFrame(options);
-    r7iframe.load(callback, context);
-  };
-  exports.unloadIframe = function(callback, context) {
-    if (!r7iframe) { console.warn('iframe: not loaded'); return; }
-    r7iframe.unload();
-    r7iframe = null;
-    callback.call(context);
-  };
+  exports.R7IFrame = R7IFrame;
 
 }) (this);
-},{"lodash":2,"q":3}]},{},[4])
+},{"lodash":2,"q":3}],5:[function(require,module,exports){
+(function() {
+    'use strict';
+
+  var VERSION = '0.1.3';
+
+  var _ = require('lodash');
+  var embed = require('./embed');
+
+  function noop() {}
+
+  function _bind(callback, context) {
+    callback = callback || noop;
+    if (!context) { return callback; }
+    return function bound() {
+      return callback.apply(context, arguments);
+    };
+  }
+
+  function _deprecate(name, fn) {
+    return function() {
+      console.warn('R7 deprecated method ' + name);
+      return fn.apply(null, arguments);
+    };
+  }
+
+  var AVAILABLE_KEYS = {
+    Up:       true,
+    Down:     true,
+    Right:    true,
+    Left:     true,
+    Enter:    true,
+    Mute:     true,
+    Vdown:    true,
+    Vup:      true,
+    Zoom:     true,
+    Back:     true,
+    Exit:     true,
+    Guide:    true,
+    Menu:     true,
+    Numeric:  true,
+    Rewind:   true,
+    Play:     true,
+    Forward:  true,
+    Stop:     true,
+    Pause:    true,
+    Rec:      true,
+    TV:       true
+  };
+
+  var _rpcs = {};
+  var _keys = {};
+  var _streams = {};
+  var _iframe = null;
+
+  function getKey(key) {
+    if (typeof key === 'object') {
+      key = Object.keys(key)[0];
+    }
+    if (!AVAILABLE_KEYS[key]) {
+      throw new Error('non available key');
+    }
+    return key;
+  }
+
+  function streamParams(type) {
+    var m = type.match(/(\w+):(\w+)/);
+    return { source: m[1], event: m[2] };
+  }
+
+  var handlers = {
+    rpc: function(msg) {
+      var id = msg.id;
+      var cb = _rpcs[id];
+      if (!cb) { return; }
+      if (!msg.id || !(msg.hasOwnProperty('error') || msg.hasOwnProperty('result'))) {
+        return;
+      }
+      delete _rpcs[id];
+      if (msg.error) {
+        cb(new Error(msg.error.message));
+      } else {
+        cb(null, msg.result);
+      }
+    },
+
+    key: function(msg) {
+      var key = msg.key;
+      var res = key.match(/Numeric([0-9])/i);
+      if (res) {
+        key = 'Numeric';
+        msg.number = +res[1];
+      }
+      var cb = _keys[key];
+      if (!cb) { return; }
+      cb(msg);
+    },
+
+    stream: function(msg) {
+      for (var key in msg) {
+        if (!_streams[key]) { continue; }
+        var cb = _streams[key];
+        cb(msg[key]);
+      }
+    }
+  };
+
+  function onMessage(evt) {
+    var msg = evt.data;
+    if (msg.id)  { return handlers.rpc(msg); }
+    if (msg.key) { return handlers.key(msg); }
+    return handlers.stream(msg);
+  }
+
+  var send = function() {
+    var uid = 1;
+    return function(method, params) {
+      window.parent.postMessage({
+        jsonrpc: '2.0',
+        id: uid,
+        method: method,
+        params: params
+      }, '*');
+      return uid++;
+    };
+  }();
+
+  // !! DEPRECATED !! do not handle errors
+  function deprecatedRPC(method, params, callback, context) {
+    if (typeof params === 'function') {
+      context  = callback;
+      callback = params;
+      params   = null;
+    }
+
+    callback = _bind(callback, context);
+
+    var uid = send(method, params);
+    _rpcs[uid] = function(err, res) {
+      callback(err || res);
+    };
+
+    return uid;
+  }
+
+  function rpc(method, params, callback, context) {
+    if (typeof params === 'function') {
+      context  = callback;
+      callback = params;
+      params   = null;
+    }
+
+    var uid = send(method, params);
+    _rpcs[uid] = _bind(callback, context);
+
+    return uid;
+  }
+
+  function navigate(route, options, callback, context) {
+    return rpc('navigate', {
+      control: route,
+      context: options
+    }, callback, context);
+  }
+
+  function grabKey(key, callback, context) {
+    var k = getKey(key);
+    if (typeof key === 'object') {
+      send('addKeys', key);
+    } else {
+      send('addKeys', [k]);
+    }
+    _keys[k] = _bind(callback, context);
+  }
+
+  function releaseKey(key) {
+    key = getKey(key);
+    delete _keys[key];
+    send('removeKeys', [key]);
+  }
+
+  function ready(callback, context) {
+    window.addEventListener('load', function() {
+      rpc('ready', _bind(callback, context));
+    }, false);
+  }
+
+  function addStreamListener(type, callback, context) {
+    if (type === 'focus' || type === 'blur') {
+      _streams[type] = _bind(callback, context);
+    } else {
+      send('addStreamListener', streamParams(type));
+      _streams['stream:' + type] = _bind(callback, context);
+    }
+  }
+
+  function removeStreamListener(type) {
+    delete _streams[type];
+  }
+
+  function loadIframe(options, callback, context) {
+    if (_iframe) { console.error('iframe: already loaded'); return; }
+    _iframe = new embed.R7IFrame(options);
+
+    var keys = _.clone(_keys), streams = _.clone(_streams);
+
+    function clearContext() {
+      for (var key in _keys) { releaseKey(key); }
+      for (var stream in _streams) { removeStreamListener(stream); }
+    }
+
+    function restoreContext() {
+      clearContext();
+      _iframe.unload();
+      _iframe = null;
+      for (var key in keys) { grabKey(key, keys[key]); }
+      for (var stream in streams) { addStreamListener(stream, streams[stream]); }
+    }
+
+    clearContext();
+    grabKey('Back', restoreContext);
+    callback = _bind(callback, context);
+    _iframe.load(function(err) { if (err) { restoreContext(); } callback(err); });
+  }
+
+  function R7(method, params, callback, context) {
+    return rpc(method, params, callback, context);
+  }
+
+  R7.version = VERSION;
+
+  R7.ready      = ready;
+  R7.grabKey    = grabKey;
+  R7.releaseKey = releaseKey;
+  R7.navigate   = navigate;
+
+  R7.addStreamListener = addStreamListener;
+
+  R7.loadIframe = loadIframe;
+
+  // Deprecated methods
+  R7.rpc          = _deprecate('rpc',  deprecatedRPC);
+  R7.send         = _deprecate('send', deprecatedRPC);
+  R7.onReadyState = _deprecate('onReadyState', ready);
+
+  // Bind global handler
+  window.addEventListener('message', onMessage, false);
+
+  window.R7 = R7;
+
+}) ();
+},{"./embed":4,"lodash":2}]},{},[5])

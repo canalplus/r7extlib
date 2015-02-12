@@ -3,7 +3,8 @@
 
   var VERSION = '0.1.3';
 
-  var router = require('./router');
+  var _ = require('lodash');
+  var embed = require('./embed');
 
   function noop() {}
 
@@ -49,6 +50,7 @@
   var _rpcs = {};
   var _keys = {};
   var _streams = {};
+  var _iframe = null;
 
   function getKey(key) {
     if (typeof key === 'object') {
@@ -191,6 +193,35 @@
     }
   }
 
+  function removeStreamListener(type) {
+    delete _streams[type];
+  }
+
+  function loadIframe(options, callback, context) {
+    if (_iframe) { console.error('iframe: already loaded'); return; }
+    _iframe = new embed.R7IFrame(options);
+
+    var keys = _.clone(_keys), streams = _.clone(_streams);
+
+    function clearContext() {
+      for (var key in _keys) { releaseKey(key); }
+      for (var stream in _streams) { removeStreamListener(stream); }
+    }
+
+    function restoreContext() {
+      clearContext();
+      _iframe.unload();
+      _iframe = null;
+      for (var key in keys) { grabKey(key, keys[key]); }
+      for (var stream in streams) { addStreamListener(stream, streams[stream]); }
+    }
+
+    clearContext();
+    grabKey('Back', restoreContext);
+    callback = _bind(callback, context);
+    _iframe.load(function(err) { if (err) { restoreContext(); } callback(err); });
+  }
+
   function R7(method, params, callback, context) {
     return rpc(method, params, callback, context);
   }
@@ -204,12 +235,12 @@
 
   R7.addStreamListener = addStreamListener;
 
+  R7.loadIframe = loadIframe;
+
   // Deprecated methods
   R7.rpc          = _deprecate('rpc',  deprecatedRPC);
   R7.send         = _deprecate('send', deprecatedRPC);
   R7.onReadyState = _deprecate('onReadyState', ready);
-
-  R7.loadIframe = router.loadIframe;
 
   // Bind global handler
   window.addEventListener('message', onMessage, false);
