@@ -199,7 +199,6 @@
 
   function loadIframe(options, callback, context) {
     if (_iframe) { console.error('iframe: already loaded'); return; }
-    _iframe = new embed.R7IFrame(options);
 
     var keys = _.clone(_keys), streams = _.clone(_streams);
 
@@ -217,9 +216,19 @@
     }
 
     clearContext();
-    grabKey('Back', restoreContext);
-    callback = _bind(callback, context);
-    _iframe.load(function(err) { if (err) { restoreContext(); } callback(err); });
+
+    _iframe = new embed.R7IFrame(options);
+
+    grabKey('Back', function() {
+      restoreContext();
+      if (!!streams.focus) { streams.focus(); }
+    });
+
+    _iframe.load(function(err) {
+      if (err) { restoreContext(); }
+      callback.call(context, err);
+      if (!err && !!streams.blur) { streams.blur(); }
+    });
   }
 
   function R7(method, params, callback, context) {

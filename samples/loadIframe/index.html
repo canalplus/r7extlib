@@ -89,6 +89,14 @@
         R7.grabKey('Left', function() { mickey.move('left'); });
         R7.grabKey('Right', function() { mickey.move('right'); });
         R7.grabKey('Enter', function() { mickey.click(); });
+
+        R7.addStreamListener('focus', function() {
+          message('Press OK to lauch the remote application in an iframe.');
+          document.querySelector('article').style.display = 'block';
+        });
+        R7.addStreamListener('blur', function() {
+          document.querySelector('article').style.display = 'none';
+        });
       });
     })();
     </script>
