@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>R7extlib - R7.loadIframe redirection app tests</title>
+    <style type="text/css">
+      @font-face {
+        font-family: "CanalDR";
+        src: url('../assets/fonts/CanalDemiRomainG7.otf') format('opentype');
+      }
+
+      body {
+        background-color: rgba(255,255,255, 0.7);
+        color: black;
+        margin: 0px 40px;
+      }
+
+      h2 {
+        font-family: "CanalDR";
+      }
+
+      .error {
+        color: red;
+      }
+
+      button {
+        display: inline-block;
+        padding: 7px 13px 8px 15px;
+        min-width: 193px;
+        margin-left: -3px;
+        text-transform: uppercase;
+        text-align: center;
+        color: rgb(255, 255, 255);
+        font: normal 18px/20px "CanalDR";
+        border: 3px solid transparent;
+        background-color: rgb(204, 204, 204);
+        background-clip: padding-box;
+        -webkit-box-sizing: content-box;
+      }
+      button.hover {
+        border: 3px solid rgba(0,0,0,0.8) !important;
+      }
+
+    </style>
+    <script type="text/javascript" src="../bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="../bower_components/mickey.js/dist/mickey.js"></script>
+    <script type="text/javascript" src="../bower_components/r7extlib/dist/r7extlib.js"></script>
+  </head>
+  <body>
+    <h2>REDIRECT_02.html</h2>
+    <article data-nav-area="button">
+      <button data-navigate="guide">GUIDE</button>
+      <button data-navigate="hub_videos">HUB VIDEOS</button>
+    </article>
+    <script type="text/javascript">
+    (function() {
+      'use strict';
+
+      var redirect = function (e) {
+        if (!!e.target.dataset.url) {
+          document.location = e.target.dataset.url;
+        } else if (!!e.target.dataset.navigate) {
+          R7.navigate(e.target.dataset.navigate);
+        }
+      };
+
+      document.querySelector('article').addEventListener('click', redirect, false);
+
+      R7.ready(function() {
+        var mickey = new Mickey(document.body).init();
+        R7.grabKey('Left', function() { mickey.move('left'); });
+        R7.grabKey('Right', function() { mickey.move('right'); });
+        R7.grabKey('Enter', function() { mickey.click(); });
+        R7.grabKey('Back', function() { document.location = 'index.html'; });
+      });
+    })();
+    </script>
+  </body>
+</html>
