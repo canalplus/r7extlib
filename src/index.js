@@ -215,15 +215,26 @@
       for (var stream in streams) { addStreamListener(stream, streams[stream]); }
     }
 
+    function exit() {
+      restoreContext();
+      if (!!streams.focus) { streams.focus(); }
+    }
+
     clearContext();
 
     _iframe = new embed.R7IFrame(options);
 
     grabKey('Back', function() {
       if (_iframe.onKeyBack()) { return _iframe.goBack(); }
-      restoreContext();
-      if (!!streams.focus) { streams.focus(); }
+      exit();
     });
+
+    if (!_.isSet(options.exit) || options.exit) {
+      grabKey('Exit', function() {
+        if (_iframe.onKeyExit()) { return _iframe.resume(); }
+        exit();
+      });
+    }
 
     _iframe.load(function(err) {
       if (err) { restoreContext(); }

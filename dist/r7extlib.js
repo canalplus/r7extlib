@@ -8994,7 +8994,7 @@ return Q;
       }
       for (var key in keys) {
         var fn = _.bind(broadcast, null, 'key', key);
-        if (key === 'Back') { r.onKeyBack = fn; } else { R7.grabKey(key, fn); }
+        if (key === 'Back' || key === 'Exit') { r['onKey' + key] = fn; } else { R7.grabKey(key, fn); }
       }
     }
 
@@ -9005,7 +9005,7 @@ return Q;
       }
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (key === 'Back') { r.onKeyBack = null; } else { R7.releaseKey(key); }
+        if (key === 'Back' || key === 'Exit') { r['onKey' + key] = null; } else { R7.releaseKey(key); }
       }
     }
 
@@ -9050,7 +9050,7 @@ return Q;
       // s = null;
     };
 
-    r.onKeyBack = null;
+    r.onKeyBack = r.onKeyExit = null;
 
     r.mount();
 
@@ -9126,6 +9126,14 @@ return Q;
 
     goBack: function () {
       return this.router.onKeyBack();
+    },
+
+    onKeyExit: function() {
+      return !!this.router.onKeyExit;
+    },
+
+    resume: function() {
+      return this.router.resume();
     }
   };
 
@@ -9350,15 +9358,26 @@ return Q;
       for (var stream in streams) { addStreamListener(stream, streams[stream]); }
     }
 
+    function exit() {
+      restoreContext();
+      if (!!streams.focus) { streams.focus(); }
+    }
+
     clearContext();
 
     _iframe = new embed.R7IFrame(options);
 
     grabKey('Back', function() {
       if (_iframe.onKeyBack()) { return _iframe.goBack(); }
-      restoreContext();
-      if (!!streams.focus) { streams.focus(); }
+      exit();
     });
+
+    if (!_.isSet(options.exit) || options.exit) {
+      grabKey('Exit', function() {
+        if (_iframe.onKeyExit()) { return _iframe.resume(); }
+        exit();
+      });
+    }
 
     _iframe.load(function(err) {
       if (err) { restoreContext(); }

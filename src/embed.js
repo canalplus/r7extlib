@@ -198,7 +198,7 @@
       }
       for (var key in keys) {
         var fn = _.bind(broadcast, null, 'key', key);
-        if (key === 'Back') { r.onKeyBack = fn; } else { R7.grabKey(key, fn); }
+        if (key === 'Back' || key === 'Exit') { r['onKey' + key] = fn; } else { R7.grabKey(key, fn); }
       }
     }
 
@@ -209,7 +209,7 @@
       }
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        if (key === 'Back') { r.onKeyBack = null; } else { R7.releaseKey(key); }
+        if (key === 'Back' || key === 'Exit') { r['onKey' + key] = null; } else { R7.releaseKey(key); }
       }
     }
 
@@ -254,7 +254,7 @@
       // s = null;
     };
 
-    r.onKeyBack = null;
+    r.onKeyBack = r.onKeyExit = null;
 
     r.mount();
 
@@ -330,6 +330,14 @@
 
     goBack: function () {
       return this.router.onKeyBack();
+    },
+
+    onKeyExit: function() {
+      return !!this.router.onKeyExit;
+    },
+
+    resume: function() {
+      return this.router.resume();
     }
   };
 
