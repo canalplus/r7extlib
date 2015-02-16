@@ -8993,7 +8993,8 @@ return Q;
         keys = _.hashMap(keys, false);
       }
       for (var key in keys) {
-        R7.grabKey(key, _.bind(broadcast, null, 'key', key));
+        var fn = _.bind(broadcast, null, 'key', key);
+        if (key === 'Back') { r.onKeyBack = fn; } else { R7.grabKey(key, fn); }
       }
     }
 
@@ -9004,7 +9005,7 @@ return Q;
       }
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
-        R7.releaseKey(key);
+        if (key === 'Back') { r.onKeyBack = null; } else { R7.releaseKey(key); }
       }
     }
 
@@ -9048,6 +9049,8 @@ return Q;
       a = null;
       // s = null;
     };
+
+    r.onKeyBack = null;
 
     r.mount();
 
@@ -9121,6 +9124,14 @@ return Q;
       this.iframe.removeEventListener('load', this._loaded, false);
       delete this.router;
       delete this._loaded;
+    },
+
+    onKeyBack: function() {
+      return !!this.router.onKeyBack;
+    },
+
+    goBack: function () {
+      return this.router.onKeyBack();
     }
   };
 
@@ -9350,6 +9361,7 @@ return Q;
     _iframe = new embed.R7IFrame(options);
 
     grabKey('Back', function() {
+      if (_iframe.onKeyBack()) { return _iframe.goBack(); }
       restoreContext();
       if (!!streams.focus) { streams.focus(); }
     });

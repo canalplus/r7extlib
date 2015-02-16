@@ -220,6 +220,7 @@
     _iframe = new embed.R7IFrame(options);
 
     grabKey('Back', function() {
+      if (_iframe.onKeyBack()) { return _iframe.goBack(); }
       restoreContext();
       if (!!streams.focus) { streams.focus(); }
     });
