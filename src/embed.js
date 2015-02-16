@@ -269,22 +269,16 @@
     initialize: function(options) {
       var url = options.url;
 
-      // create the iframe
-      var iframe = this.iframe;
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.sandbox = SANDBOX;
-        iframe.src = url;
+      if (!this.iframe) {
+        this.iframe = document.createElement('iframe');
+        this.iframe.sandbox = SANDBOX;
+        this.iframe.src = url;
 
         var style = _.extend(IFRAME_STYLE, options.style);
         for (var property in style) {
-          iframe.style[property] = style[property];
+          this.iframe.style[property] = style[property];
         }
-      } else if (iframe.dataset.keys) {
-        // this.registerKeys(JSON.parse(this.iframe.dataset.keys));
       }
-
-      this.iframe = iframe;
 
       this.el = options.el || document.body;
 
