@@ -1,6 +1,10 @@
-(function(global) {
+(function() {
+    'use strict';
 
-  VERSION = '0.1.3';
+  var VERSION = '0.1.3';
+
+  var _ = require('lodash');
+  var embed = require('./embed');
 
   function noop() {}
 
@@ -46,6 +50,7 @@
   var _rpcs = {};
   var _keys = {};
   var _streams = {};
+  var _iframe = null;
 
   function getKey(key) {
     if (typeof key === 'object') {
@@ -188,9 +193,61 @@
     }
   }
 
+  function removeStreamListener(type) {
+    delete _streams[type];
+  }
+
+  function loadIframe(options, callback, context) {
+    if (_iframe) { console.error('iframe: already loaded'); return; }
+
+    var keys = _.clone(_keys), streams = _.clone(_streams);
+
+    function clearContext() {
+      for (var key in _keys) { releaseKey(key); }
+      for (var stream in _streams) { removeStreamListener(stream); }
+    }
+
+    function restoreContext() {
+      clearContext();
+      _iframe.unload();
+      _iframe = null;
+      for (var key in keys) { grabKey(key, keys[key]); }
+      for (var stream in streams) { addStreamListener(stream, streams[stream]); }
+    }
+
+    function exit() {
+      restoreContext();
+      if (!!streams.focus) { streams.focus(); }
+    }
+
+    clearContext();
+
+    _iframe = new embed.R7IFrame(options);
+
+    grabKey('Back', function() {
+      if (_iframe.onKeyBack()) { return _iframe.goBack(); }
+      exit();
+    });
+
+    if (!_.isSet(options.exit) || options.exit) {
+      grabKey('Exit', function() {
+        if (_iframe.onKeyExit()) { return _iframe.resume(); }
+        exit();
+      });
+    }
+
+    _iframe.load(function(err) {
+      if (err) { restoreContext(); }
+      callback.call(context, err);
+      if (!err && !!streams.blur) { streams.blur(); }
+    });
+  }
+
   function R7(method, params, callback, context) {
     return rpc(method, params, callback, context);
   }
+
+  R7.version = VERSION;
 
   R7.ready      = ready;
   R7.grabKey    = grabKey;
@@ -198,6 +255,8 @@
   R7.navigate   = navigate;
 
   R7.addStreamListener = addStreamListener;
+
+  R7.loadIframe = loadIframe;
 
   // Deprecated methods
   R7.rpc          = _deprecate('rpc',  deprecatedRPC);
@@ -207,6 +266,6 @@
   // Bind global handler
   window.addEventListener('message', onMessage, false);
 
-  global.R7 = R7;
+  window.R7 = R7;
 
-})(this);
+}) ();

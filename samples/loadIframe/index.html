@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Sample app for loading new iFrame app on Canal+ R7 STB</title>
+    <style type="text/css">
+      @font-face {
+        font-family: "CanalDR";
+        src: url('assets/fonts/CanalDemiRomainG7.otf') format('opentype');
+      }
+
+      body {
+        background-color: rgba(255,255,255, 0.7);
+        color: black;
+        margin: 0px 40px;
+      }
+
+      h2 {
+        font-family: "CanalDR";
+      }
+
+      .error {
+        color: red;
+      }
+
+      button {
+        display: inline-block;
+        padding: 7px 13px 8px 15px;
+        min-width: 193px;
+        margin-left: -3px;
+        text-transform: uppercase;
+        text-align: center;
+        color: rgb(255, 255, 255);
+        font: normal 18px/20px "CanalDR";
+        border: 3px solid transparent;
+        background-color: rgb(204, 204, 204);
+        background-clip: padding-box;
+        -webkit-box-sizing: content-box;
+      }
+      button.hover {
+        border: 3px solid rgba(0,0,0,0.8) !important;
+      }
+
+    </style>
+    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="bower_components/mickey.js/dist/mickey.js"></script>
+    <script type="text/javascript" src="bower_components/r7extlib/dist/r7extlib.js"></script>
+  </head>
+  <body>
+    <h2>SAMPLE APPLICATION FOR &#xe001; R7 STB</h2>
+    <p>Press OK to lauch the remote application in an iframe.</p>
+    <article data-nav-area="button">
+      <button data-url="iframe.html">iframe.html</button>
+      <button data-url="redirect/index.html">redirect</button>
+    </article>
+    <script type="text/javascript">
+    (function() {
+      'use strict';
+
+      var error = function(err) {
+        document.querySelector('p').innerHTML = err.message;
+        document.querySelector('p').className = 'error';
+        console.error(err);
+      };
+      var message = function(txt) {
+        document.querySelector('p').innerHTML = txt;
+        document.querySelector('p').className = '';
+      };
+
+      var loadIframe = function (e) {
+        var url = e.target.dataset.url;
+        var now = new Date();
+        R7.loadIframe({
+          url: url,
+          style: {
+            width: '1200px',
+            height: '600px'
+          }
+        }, function(err) {
+          if (err) { return error(err); }
+          var time = ((new Date()).getTime() - now.getTime()) / 1e3;
+          message('The remote application is loaded and ready in ' + time + 's');
+        });
+      };
+      document.querySelector('article').addEventListener('click', loadIframe, false);
+
+      R7.ready(function() {
+        var mickey = new Mickey(document.body).init();
+        R7.grabKey('Left', function() { mickey.move('left'); });
+        R7.grabKey('Right', function() { mickey.move('right'); });
+        R7.grabKey('Enter', function() { mickey.click(); });
+
+        R7.addStreamListener('focus', function() {
+          message('Press OK to lauch the remote application in an iframe.');
+          document.querySelector('article').style.display = 'block';
+        });
+        R7.addStreamListener('blur', function() {
+          document.querySelector('article').style.display = 'none';
+        });
+      });
+    })();
+    </script>
+  </body>
+</html>
