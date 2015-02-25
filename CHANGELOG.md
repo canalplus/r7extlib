@@ -1,3 +1,7 @@
+# v0.1.4
+* Allow application to load Iframe
+* Use gulp in order to build application
+
 # v0.1.3
 * Add the volume keys to the bindable keys
 
