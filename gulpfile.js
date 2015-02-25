@@ -6,6 +6,7 @@
       jshint = require('gulp-jshint'),
       rimraf = require('gulp-rimraf'),
       browserify = require('gulp-browserify'),
+      uglify = require('gulp-uglify'),
       rename = require('gulp-rename'),
       mochaPhantomJS = require('gulp-mocha-phantomjs');
 
@@ -23,6 +24,12 @@
       .pipe(jshint.reporter('fail'));
   });
 
+  gulp.task('compress', function() {
+    gulp.src('dist/*.js')
+      .pipe(uglify())
+      .pipe(gulp.dest('dist'));
+  });
+
   gulp.task('browserify', function() {
     return gulp
       .src('src/index.js')
@@ -38,10 +45,10 @@
         mocha: {
           grep: argv['test-grep']
         },
-        reporter: 'nyan'
+        reporter: 'spec'
       }));
   });
 
-  gulp.task('default', ['clean', 'lint', 'browserify']);
+  gulp.task('default', ['clean', 'lint', 'browserify', 'compress']);
 
 })();
