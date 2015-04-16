@@ -223,6 +223,7 @@
     clearContext();
 
     _iframe = new embed.R7IFrame(options);
+    _iframe.use('exit', exit);
 
     grabKey('Back', function() {
       if (_iframe.onKeyBack()) { return _iframe.goBack(); }
@@ -243,6 +244,11 @@
     });
   }
 
+  //Will only work inside an iframe
+  function exit() {
+    send('exit');
+  }
+
   function R7(method, params, callback, context) {
     return rpc(method, params, callback, context);
   }
@@ -257,6 +263,7 @@
   R7.addStreamListener = addStreamListener;
 
   R7.loadIframe = loadIframe;
+  R7.exit = exit;
 
   // Deprecated methods
   R7.rpc          = _deprecate('rpc',  deprecatedRPC);

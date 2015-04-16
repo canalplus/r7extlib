@@ -324,6 +324,10 @@
       delete this._loaded;
     },
 
+    use: function(action, fn, ctx) {
+      this.router.use(action, fn, ctx);
+    },
+
     onKeyBack: function() {
       return !!this.router.onKeyBack;
     },
