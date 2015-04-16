@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>R7extlib - R7.loadIframe close application test</title>
+    <style type="text/css">
+      @font-face {
+        font-family: "CanalDR";
+        src: url('../assets/fonts/CanalDemiRomainG7.otf') format('opentype');
+      }
+
+      body {
+        background-color: rgba(255,255,255, 0.7);
+        color: black;
+        margin: 0px 40px;
+      }
+
+      h2 {
+        font-family: "CanalDR";
+      }
+
+      .error {
+        color: red;
+      }
+
+      button {
+        display: inline-block;
+        padding: 7px 13px 8px 15px;
+        min-width: 193px;
+        margin-left: -3px;
+        text-transform: uppercase;
+        text-align: center;
+        color: rgb(255, 255, 255);
+        font: normal 18px/20px "CanalDR";
+        border: 3px solid transparent;
+        background-color: rgb(204, 204, 204);
+        background-clip: padding-box;
+        -webkit-box-sizing: content-box;
+      }
+      button.hover {
+        border: 3px solid rgba(0,0,0,0.8) !important;
+      }
+
+    </style>
+    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="bower_components/mickey.js/dist/mickey.js"></script>
+    <script type="text/javascript" src="bower_components/r7extlib/dist/r7extlib.js"></script>
+  </head>
+  <body>
+    <h2>Test Exit function</h2>
+    <p>Press OK to close the current iframe.</p>
+    <article data-nav-area="button">
+      <button class="hover">CLOSE</button>
+    </article>
+    <script type="text/javascript">
+    (function() {
+      'use strict';
+
+      R7.ready(function() {
+        R7.grabKey('Enter', function() { R7.exit(); });
+      });
+    })();
+    </script>
+  </body>
+</html>
