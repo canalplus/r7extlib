@@ -33,13 +33,39 @@
       .error {
         color: red;
       }
+
+      button {
+        display: inline-block;
+        padding: 7px 13px 8px 15px;
+        min-width: 193px;
+        margin-left: -3px;
+        text-transform: uppercase;
+        text-align: center;
+        color: rgb(255, 255, 255);
+        font: normal 18px/20px "CanalDR";
+        border: 3px solid transparent;
+        background-color: rgb(204, 204, 204);
+        background-clip: padding-box;
+        -webkit-box-sizing: content-box;
+      }
+      button.hover {
+        border: 3px solid rgba(0,0,0,0.8) !important;
+      }
+
     </style>
-    <script type="text/javascript" src="bower_components/r7extlib/lib/r7extlib.js"></script>
+    <script type="text/javascript" src="bower_components/r7extlib/dist/r7extlib.js"></script>
+    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="bower_components/mickey.js/dist/mickey.js"></script>
   </head>
   <body>
     <div id="main">
       <h2>SAMPLE APPLICATION FOR &#xe001; R7 STB</h2>
       <p class="message">Press OK to start the download and the playback of the video.</p>
+      <article data-nav-area="button">
+        <button data-name="captainAmerica">Captain America</button>
+        <button data-name="mytf1">MyTF1</button>
+        <button data-name="ocs">OCS</button>
+      </article>
       <p class="error"></p>
       <p class="warning">If your video has already been downloaded to your STB, you can remove it on the 99th channel MES VIDEOS.<br/>Otherwise, the STB will play the already downloaded video without downloading a new one.</p>
     </div>
@@ -60,6 +86,24 @@
         channelName: 'CANAL+',
         country: 'Etats-Unis'
       };
+
+    var downloadOptions = {
+      captainAmerica: {
+        uri: URI,
+        license: LICENSE,
+        metadata: METADATA
+      },
+      mytf1: {
+        extId:   'passseries.com_1168356_1_VM_HD_SABC',
+        extIdKey: true,
+        catalog: 'mytf1'
+      },
+      ocs: {
+        extId:   'orange.com_PRETTYL0501W0096619Z',
+        extIdKey: true,
+        catalog: 'csatald'
+      }
+    };
 
     // var
     //   URI = '<YOUR LICENSE HERE>', //Content uri
@@ -87,15 +131,16 @@
       document.querySelector('p.message').innerHTML = txt;
     };
 
-    var download = function() {
+    var download = function(e) {
+      var options = {};
+      if (!!e.target.dataset.name) {
+        options = downloadOptions[e.target.dataset.name];
+      }
+
       message('Downloading ' + METADATA.titleLbl || '');
-      R7('download', {
-        uri: URI,
-        license: LICENSE,
-        metadata: METADATA
-      }, function(err, content) {
+      R7('download', options, function(err, content) {
         if (err) { return error(err); }
-        message('Start playing ' + METADATA.titleLbl || '');
+        message('Start playing ' + content.titleLbl || '');
         R7.navigate('video_player', content, function(err) {
           if (err) { error(err); }
           else {
@@ -105,7 +150,14 @@
       });
     };
 
-    R7.ready(function() { R7.grabKey('Enter', download); });
+    document.querySelector('article').addEventListener('click', download, false);
+
+    R7.ready(function() {
+      var mickey = new Mickey(document.body).init();
+      R7.grabKey('Left', function() { mickey.move('left'); });
+      R7.grabKey('Right', function() { mickey.move('right'); });
+      R7.grabKey('Enter', function() { mickey.click(); });
+    });
   }) ();
   </script>
 </html>
