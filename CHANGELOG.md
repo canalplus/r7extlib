@@ -1,3 +1,6 @@
+# v0.1.5
+* Add exit method to close itself (in an iframe application)
+
 # v0.1.4
 * Allow application to load Iframe
 * Use gulp in order to build application
