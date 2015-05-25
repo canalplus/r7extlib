@@ -9410,6 +9410,7 @@ return Q;
   R7.navigate   = navigate;
 
   R7.addStreamListener = addStreamListener;
+  R7.removeStreamListener = removeStreamListener;
 
   R7.loadIframe = loadIframe;
   R7.exit = exit;
