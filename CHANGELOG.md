@@ -1,3 +1,7 @@
+# v0.1.6
+* Clear the loading timeout on unload (loadIframe)
+* Expose removeStreamListener method
+
 # v0.1.5
 * Add exit method to close itself (in an iframe application)
 
