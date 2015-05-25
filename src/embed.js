@@ -293,6 +293,7 @@
       this._loaded = _.bind(this.loaded, this, callback);
 
       if (!this.iframe.dataset.loaded) {
+        if (this.timeout) { clearTimeout(this.timeout); }
         this.timeout = setTimeout(_.bind(this.onTimeoutExpired, this, callback), READY_DELAY);
         window.addEventListener('message', this.router, false);
         this.iframe.addEventListener('load', this._loaded, false);
@@ -317,6 +318,7 @@
     },
 
     unload: function() {
+      if (this.timeout) { clearTimeout(this.timeout); }
       this.el.removeChild(this.iframe);
       window.removeEventListener('message', this.router, false);
       this.iframe.removeEventListener('load', this._loaded, false);
