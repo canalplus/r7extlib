@@ -25,7 +25,7 @@
   });
 
   gulp.task('compress', function() {
-    gulp.src('dist/*.js')
+    gulp.src('tmp/*.js')
       .pipe(uglify())
       .pipe(gulp.dest('dist'));
   });
@@ -35,7 +35,7 @@
       .src('src/index.js')
       .pipe(browserify())
       .pipe(rename('r7extlib.js'))
-      .pipe(gulp.dest('dist/'));
+      .pipe(gulp.dest('tmp/'));
   });
 
   gulp.task('test', function() {
