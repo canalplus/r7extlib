@@ -1,9 +1,10 @@
 (function() {
-    'use strict';
+  'use strict';
 
   var VERSION = '0.1.9';
 
   var _ = require('lodash');
+  var history = require('./history.js');
   var embed = require('./embed');
 
   function noop() {}
@@ -180,7 +181,12 @@
 
   function ready(callback, context) {
     window.addEventListener('load', function() {
-      rpc('ready', _bind(callback, context));
+      rpc('ready', function(notUsed, response) {
+      if (response) {
+        window.history.init(response.clearHistory);
+      }
+        _bind(callback, context)();
+      });
     }, false);
   }
 
