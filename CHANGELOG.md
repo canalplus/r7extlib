@@ -1,3 +1,9 @@
+# v0.1.8
+* Fix navigation from iframe
+
+# v0.1.7
+* Minify library
+
 # v0.1.6
 * Clear the loading timeout on unload (loadIframe)
 * Expose removeStreamListener method

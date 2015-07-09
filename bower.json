@@ -1,6 +1,6 @@
 {
   "name": "r7extlib",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "homepage": "https://github.com/canalplus/r7extlib",
   "description": "Easy interaction with Canal+ R7 box for external webapps",
   "main": "dist/r7extlib.js",
