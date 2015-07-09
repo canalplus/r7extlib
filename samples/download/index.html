@@ -1,0 +1,150 @@
+<html>
+  <head>
+    <title>Sample app for downloading video on Canal+ R7 STB</title>
+    <style type="text/css">
+      @font-face {
+        font-family: "CanalDR";
+        src: url('assets/fonts/CanalDemiRomainG7.otf') format('opentype');
+      }
+
+      body {
+        background-color: rgb(0,0,0);
+        margin: 0;
+      }
+
+      #main {
+        width: 1200px;
+        height: 704px;
+        padding: 8px 40px;
+        background-color: rgb(255,255,255);
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        margin: auto;
+      }
+
+      h2 {
+        font-family: "CanalDR";
+      }
+
+      .warning {
+        color: orange;
+      }
+
+      .error {
+        color: red;
+      }
+
+      button {
+        display: inline-block;
+        padding: 7px 13px 8px 15px;
+        min-width: 193px;
+        margin-left: -3px;
+        text-transform: uppercase;
+        text-align: center;
+        color: rgb(255, 255, 255);
+        font: normal 18px/20px "CanalDR";
+        border: 3px solid transparent;
+        background-color: rgb(204, 204, 204);
+        background-clip: padding-box;
+        -webkit-box-sizing: content-box;
+      }
+      button.hover {
+        border: 3px solid rgba(0,0,0,0.8) !important;
+      }
+
+    </style>
+    <script type="text/javascript" src="bower_components/r7extlib/dist/r7extlib.js"></script>
+    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="bower_components/mickey.js/dist/mickey.js"></script>
+  </head>
+  <body>
+    <div id="main">
+      <h2>SAMPLE APPLICATION FOR &#xe001; R7 STB</h2>
+      <p class="message">Press OK to start the download and the playback of the video.</p>
+      <article data-nav-area="button">
+        <button data-name="captainAmerica">Captain America</button>
+        <button data-name="mytf1">MyTF1</button>
+        <button data-name="ocs">OCS</button>
+      </article>
+      <p class="error"></p>
+      <p class="warning">If your video has already been downloaded to your STB, you can remove it on the 99th channel MES VIDEOS.<br/>Otherwise, the STB will play the already downloaded video without downloading a new one.</p>
+    </div>
+  </body>
+  <script type="text/javascript">
+  (function() {
+    'use strict';
+
+    var
+      URI = '<YOUR LICENSE HERE>', //Content uri
+      LICENSE = '<YOUR LICENSE HERE>', //Base64 encoded license.
+      METADATA = {
+        titleLbl: '', //Main title
+        duration: 0,  //in milliseconds
+        subtitleLbl:  '',// Subtitle
+        genreName:    '',// Like "Cinéma", "Humour" ...
+        std169Image:  '',// 188 x 105 jpeg
+        shortSummary: '',// Displayed on fiche infos
+        summary:      ''// Displayed on STB detail card > more info
+      }; // See the program's metadata page http://api.canallabs.fr/api/Program.html
+
+    var downloadOptions = {
+      captainAmerica: {
+        uri: URI,
+        license: LICENSE,
+        metadata: METADATA
+      },
+      mytf1: {
+        extId:   'eTF1.fr_csat_tf1_335193',
+        extIdKey: true,
+        catalog: 'mytf1'
+      },
+      ocs: {
+        extId:   'orange.com_PRETTYL0501W0096619Z',
+        extIdKey: true,
+        catalog: 'csatald'
+      }
+    };
+
+    var error = function(err) {
+      document.querySelector('p.message').innerHTML = '';
+      document.querySelector('p.warning').innerHTML = '';
+      document.querySelector('p.error').innerHTML = err.message;
+      console.error(err);
+    };
+
+    var message = function(txt) {
+      document.querySelector('p.warning').innerHTML = '';
+      document.querySelector('p.error').innerHTML = '';
+      document.querySelector('p.message').innerHTML = txt;
+    };
+
+    var download = function(e) {
+      var options = {};
+      if (!!e.target.dataset.name) {
+        options = downloadOptions[e.target.dataset.name];
+      }
+
+      message('Downloading ' + METADATA.titleLbl || '');
+      R7('download', options, function(err, content) {
+        if (err) { return error(err); }
+        message('Start playing ' + content.titleLbl || '');
+        R7.navigate('video_player', content, function(err) {
+          if (err) { error(err); }
+          else {
+            // Playing...
+          }
+        });
+      });
+    };
+
+    document.querySelector('article').addEventListener('click', download, false);
+
+    R7.ready(function() {
+      var mickey = new Mickey(document.body).init();
+      R7.grabKey('Left', function() { mickey.move('left'); });
+      R7.grabKey('Right', function() { mickey.move('right'); });
+      R7.grabKey('Enter', function() { mickey.click(); });
+    });
+  }) ();
+  </script>
+</html>

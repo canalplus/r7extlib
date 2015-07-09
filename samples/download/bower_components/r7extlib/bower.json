@@ -1,0 +1,19 @@
+{
+  "name": "r7extlib",
+  "version": "0.1.3",
+  "homepage": "https://github.com/canalplus/r7extlib",
+  "description": "Easy interaction with Canal+ R7 box for external webapps",
+  "main": "dist/r7extlib.js",
+  "private": true,
+  "ignore": [
+    ".*",
+    "gulpfile.js",
+    "*.md",
+    "package.json",
+    "node_modules",
+    "bower_components",
+    "specs",
+    "samples",
+    "src"
+  ]
+}
