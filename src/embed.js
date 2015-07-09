@@ -182,7 +182,7 @@
 
     function navigate(params) {
       var route = params.control,
-          context = params.options;
+          context = params.context;
       return Q.Promise(function(resolve, reject) {
         R7.navigate(route, context, function(error, result) {
           if (error) { reject(error); }
