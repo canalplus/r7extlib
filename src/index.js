@@ -194,7 +194,11 @@
   }
 
   function removeStreamListener(type) {
-    delete _streams[type];
+    if (type === 'focus' || type === 'blur') {
+      delete _streams[type];
+    } else {
+      delete _streams['stream:' + type];
+    }
   }
 
   function loadIframe(options, callback, context) {

@@ -1,3 +1,6 @@
+# v0.1.9
+* Fix removeStreamListener
+
 # v0.1.8
 * Fix navigation from iframe
 
