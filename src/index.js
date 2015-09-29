@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-  var VERSION = '0.1.8';
+  var VERSION = '0.1.9';
 
   var _ = require('lodash');
   var embed = require('./embed');
