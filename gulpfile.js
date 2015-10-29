@@ -1,14 +1,14 @@
 (function() {
   'use strict';
 
-  var gulp = require('gulp'),
-      argv = require('yargs').argv,
-      jshint = require('gulp-jshint'),
-      rimraf = require('gulp-rimraf'),
-      browserify = require('gulp-browserify'),
-      uglify = require('gulp-uglify'),
-      rename = require('gulp-rename'),
-      mochaPhantomJS = require('gulp-mocha-phantomjs');
+  var gulp = require('gulp');
+  var argv = require('yargs').argv;
+  var jshint = require('gulp-jshint');
+  var rimraf = require('gulp-rimraf');
+  var browserify = require('gulp-browserify');
+  var uglify = require('gulp-uglify');
+  var rename = require('gulp-rename');
+  var mochaPhantomJS = require('gulp-mocha-phantomjs');
 
   gulp.task('clean', function() {
     return gulp
@@ -43,12 +43,11 @@
       .src('specs/index.html')
       .pipe(mochaPhantomJS({
         mocha: {
-          grep: argv['test-grep']
+          grep: argv['test-grep'],
         },
-        reporter: 'spec'
+        reporter: 'spec',
       }));
   });
 
   gulp.task('default', ['clean', 'lint', 'browserify', 'compress']);
-
 })();

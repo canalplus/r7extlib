@@ -11,7 +11,10 @@
 
   function _bind(callback, context) {
     callback = callback || noop;
-    if (!context) { return callback; }
+    if (!context) {
+      return callback;
+    }
+
     return function bound() {
       return callback.apply(context, arguments);
     };
@@ -45,7 +48,7 @@
     Stop:     true,
     Pause:    true,
     Rec:      true,
-    TV:       true
+    TV:       true,
   };
 
   var _rpcs = {};
@@ -57,9 +60,11 @@
     if (typeof key === 'object') {
       key = Object.keys(key)[0];
     }
+
     if (!AVAILABLE_KEYS[key]) {
       throw new Error('non available key');
     }
+
     return key;
   }
 
@@ -72,10 +77,14 @@
     rpc: function(msg) {
       var id = msg.id;
       var cb = _rpcs[id];
-      if (!cb) { return; }
+      if (!cb) {
+        return;
+      }
+
       if (!msg.id || !(msg.hasOwnProperty('error') || msg.hasOwnProperty('result'))) {
         return;
       }
+
       delete _rpcs[id];
       if (msg.error) {
         cb(new Error(msg.error.message));
@@ -91,39 +100,48 @@
         key = 'Numeric';
         msg.number = +res[1];
       }
+
       var cb = _keys[key];
-      if (!cb) { return; }
+      if (!cb) {
+        return;
+      }
+
       cb(msg);
     },
 
     stream: function(msg) {
       for (var key in msg) {
-        if (!_streams[key]) { continue; }
+        if (!_streams[key]) {
+          continue;
+        }
+
         var cb = _streams[key];
         cb(msg[key]);
       }
-    }
+    },
   };
 
   function onMessage(evt) {
     var msg = evt.data;
     if (msg.id)  { return handlers.rpc(msg); }
+
     if (msg.key) { return handlers.key(msg); }
+
     return handlers.stream(msg);
   }
 
-  var send = function() {
+  var send = (function() {
     var uid = 1;
     return function(method, params) {
       window.parent.postMessage({
         jsonrpc: '2.0',
         id: uid,
         method: method,
-        params: params
+        params: params,
       }, '*');
       return uid++;
     };
-  }();
+  })();
 
   // !! DEPRECATED !! do not handle errors
   function deprecatedRPC(method, params, callback, context) {
@@ -159,7 +177,7 @@
   function navigate(route, options, callback, context) {
     return rpc('navigate', {
       control: route,
-      context: options
+      context: options,
     }, callback, context);
   }
 
@@ -170,6 +188,7 @@
     } else {
       send('addKeys', [k]);
     }
+
     _keys[k] = _bind(callback, context);
   }
 
@@ -182,9 +201,10 @@
   function ready(callback, context) {
     window.addEventListener('load', function() {
       rpc('ready', function(notUsed, response) {
-      if (response) {
-        window.history.init(response.clearHistory);
-      }
+        if (response) {
+          window.history.init(response.clearHistory);
+        }
+
         _bind(callback, context)();
       });
     }, false);
@@ -208,12 +228,17 @@
   }
 
   function loadIframe(options, callback, context) {
-    if (_iframe) { console.error('iframe: already loaded'); return; }
+    if (_iframe) {
+      console.error('iframe: already loaded');
+      return;
+    }
 
-    var keys = _.clone(_keys), streams = _.clone(_streams);
+    var keys = _.clone(_keys);
+    var streams = _.clone(_streams);
 
     function clearContext() {
       for (var key in _keys) { releaseKey(key); }
+
       for (var stream in _streams) { removeStreamListener(stream); }
     }
 
@@ -222,6 +247,7 @@
       _iframe.unload();
       _iframe = null;
       for (var key in keys) { grabKey(key, keys[key]); }
+
       for (var stream in streams) { addStreamListener(stream, streams[stream]); }
     }
 
@@ -237,18 +263,21 @@
 
     grabKey('Back', function() {
       if (_iframe.onKeyBack()) { return _iframe.goBack(); }
+
       exit();
     });
 
     if (!_.isSet(options.exit) || options.exit) {
       grabKey('Exit', function() {
         if (_iframe.onKeyExit()) { return _iframe.resume(); }
+
         exit();
       });
     }
 
     _iframe.load(function(err) {
       if (err) { restoreContext(); }
+
       callback.call(context, err);
       if (!err && !!streams.blur) { streams.blur(); }
     });
@@ -286,4 +315,4 @@
 
   window.R7 = R7;
 
-}) ();
+})();
