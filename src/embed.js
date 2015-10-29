@@ -4,29 +4,31 @@
   var _ = require('lodash');
   var Q = require('q');
 
-  var
-      /* Reserved -32000 to -32099 */
-      ERR_INVALID_REQUEST  = -32600,
-      ERR_INTERNAL         = -32603,
-      /**
-       * Sandbox options for iframe
-       * @type {String}
-       */
-      SANDBOX = 'allow-scripts allow-same-origin allow-forms',
-      /**
-       * Delay for a remote service to load
-       * @type {Number}
-       */
-      READY_DELAY = 45 * 1000,
-      /**
-       * Default style properties for iframe
-       */
-      IFRAME_STYLE = {
-        display: 'none',
-        width: '1280px',
-        height: '720px',
-        border: '0'
-      };
+  /* Reserved -32000 to -32099 */
+  var ERR_INVALID_REQUEST  = -32600;
+  var ERR_INTERNAL         = -32603;
+
+  /**
+   * Sandbox options for iframe
+   * @type {String}
+   */
+  var SANDBOX = 'allow-scripts allow-same-origin allow-forms';
+
+  /**
+   * Delay for a remote service to load
+   * @type {Number}
+   */
+  var READY_DELAY = 45 * 1000;
+
+  /**
+   * Default style properties for iframe
+   */
+  var IFRAME_STYLE = {
+    display: 'none',
+    width: '1280px',
+    height: '720px',
+    border: '0',
+  };
 
   _.parseUri = function(str) {
     var parser = document.createElement('a');
@@ -34,16 +36,17 @@
 
     var uParser = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
     var qParser = /(?:^|&)([^&=]*)=?([^&]*)/g;
-    var keys = ['source','protocol','authority','userInfo','user','password','host','port','relative','path','directory','file','query','anchor'];
+    var keys = ['source', 'protocol', 'authority', 'userInfo', 'user', 'password', 'host', 'port', 'relative', 'path', 'directory', 'file', 'query', 'anchor'];
 
-    var u = {}, i = keys.length;
+    var u = {};
+    var i = keys.length;
     var m = uParser.exec(parser.href);
     while (i--) {
       u[keys[i]] = m[i] || '';
     }
 
     u.queryKey = {};
-    u.query.replace(qParser, function ($0, $1, $2) {
+    u.query.replace(qParser, function($0, $1, $2) {
       if ($1) { u.queryKey[$1] = $2; }
     });
 
@@ -68,6 +71,7 @@
         return e;
       }
     };
+
     var outProc = function(m) {
       iframe.contentWindow.postMessage(m, '*');
     };
@@ -94,24 +98,28 @@
       var h = a[method];
       if (!h) { h = forward(method); }
 
-      var ret, fn = h.handler;
+      var ret;
+      var fn = h.handler;
       try {
         ret = _.isFunction(fn) ? fn.call(h.context, msg.params) : fn;
-      } catch(e) {
+      } catch (e) {
         ret = new Error(e);
       }
 
-      return Q.fcall(function () { return ret; })
+      return Q.fcall(function() { return ret; })
         .then(toJSON)
         .then(function(res) {
           respond(msg.id, res, src);
-        }, function(err) {
+        },
+
+        function(err) {
           error(msg.id, ERR_INTERNAL, err, src);
         });
     };
 
     function toJSON(data) {
       if (!data) { return null; }
+
       return _.isFunction(data.toJSON) ? data.toJSON() : data;
     }
 
@@ -120,9 +128,9 @@
         outProc({
           id:       id,
           result:   res,
-          response: res // retro-compat
+          response: res, // retro-compat
         }, src);
-      } catch(err) {
+      } catch (err) {
         error(id, ERR_INTERNAL, err, src);
       }
     }
@@ -131,12 +139,15 @@
       if (err instanceof Error) {
         return err.message;
       }
+
       if (err instanceof XMLHttpRequest) {
-        return 'Request error: '+ [err.status, err.method, err.url].join(' ');
+        return 'Request error: ' + [err.status, err.method, err.url].join(' ');
       }
+
       if (_.isString(err)) {
         return err;
       }
+
       return 'unknown error';
     }
 
@@ -144,8 +155,8 @@
       var message = toErrorMessage(err);
       outProc({ id: id, error: {
         code: code,
-        message: message
-      } }, src);
+        message: message,
+      }, }, src);
       return Q.fcall(function() { throw new Error(message); });
     }
 
@@ -167,25 +178,27 @@
           return Q.Promise(function(resolve, reject) {
             R7(method, params, function(error, result) {
               if (error) { reject(error); }
+
               resolve(result);
             });
           });
-        }
+        },
       };
     }
 
     function addStreamListener(params) {
-      var type = params.source + ':' + params.event,
-          stream = 'stream:' + type;
+      var type = params.source + ':' + params.event;
+      var stream = 'stream:' + type;
       R7.addStreamListener(type, _.bind(broadcast, null, stream));
     }
 
     function navigate(params) {
-      var route = params.control,
-          context = params.context;
+      var route = params.control;
+      var context = params.context;
       return Q.Promise(function(resolve, reject) {
         R7.navigate(route, context, function(error, result) {
           if (error) { reject(error); }
+
           resolve(result);
         });
       });
@@ -193,9 +206,11 @@
 
     function registerKeys(keys) {
       if (!keys) { return; }
+
       if (Array.isArray(keys)) {
         keys = _.hashMap(keys, false);
       }
+
       for (var key in keys) {
         var fn = _.bind(broadcast, null, 'key', key);
         if (key === 'Back' || key === 'Exit') { r['onKey' + key] = fn; } else { R7.grabKey(key, fn); }
@@ -204,9 +219,11 @@
 
     function unregisterKeys(keys) {
       if (!keys) { return; }
+
       if (!Array.isArray(keys)) {
         keys = Object.keys(keys);
       }
+
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         if (key === 'Back' || key === 'Exit') { r['onKey' + key] = null; } else { R7.releaseKey(key); }
@@ -233,6 +250,7 @@
 
     r.mount = function() {
       if (!a) { a = {}; }
+
       // if (!s) { s = _.extend({}, EventEmitter); }
 
       // then bind methods
@@ -249,8 +267,10 @@
     r.unmount = function() {
       // if (!s || !a) { return; }
       if (!a) { return; }
+
       // s.stopListening();
       a = null;
+
       // s = null;
     };
 
@@ -293,7 +313,8 @@
       this._loaded = _.bind(this.loaded, this, callback);
 
       if (!this.iframe.dataset.loaded) {
-        if (this.timeout) { clearTimeout(this.timeout); }
+        if (this.timeout) {clearTimeout(this.timeout);}
+
         this.timeout = setTimeout(_.bind(this.onTimeoutExpired, this, callback), READY_DELAY);
         window.addEventListener('message', this.router, false);
         this.iframe.addEventListener('load', this._loaded, false);
@@ -318,7 +339,8 @@
     },
 
     unload: function() {
-      if (this.timeout) { clearTimeout(this.timeout); }
+      if (this.timeout) {clearTimeout(this.timeout);}
+
       this.el.removeChild(this.iframe);
       window.removeEventListener('message', this.router, false);
       this.iframe.removeEventListener('load', this._loaded, false);
@@ -334,7 +356,7 @@
       return !!this.router.onKeyBack;
     },
 
-    goBack: function () {
+    goBack: function() {
       return this.router.onKeyBack();
     },
 
@@ -344,9 +366,9 @@
 
     resume: function() {
       return this.router.resume();
-    }
+    },
   };
 
   exports.R7IFrame = R7IFrame;
 
-}) (this);
+})(this);
