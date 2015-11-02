@@ -1,3 +1,8 @@
+# v0.2.0
+* Add history polyfill
+* Fix files for matching jscs rules
+* Update devDependencies
+
 # v0.1.9
 * Fix removeStreamListener
 
