@@ -1,2 +1,8 @@
-!dist
-!package.json
+.*
+bower.json
+bower_components
+CHANGELOG.md
+samples
+specs
+src
+webpack.config.js

@@ -7,13 +7,13 @@
   "private": true,
   "ignore": [
     ".*",
-    "gulpfile.js",
-    "*.md",
+    "bower_components",
+    "CHANGELOG.md",
     "package.json",
     "node_modules",
-    "bower_components",
-    "specs",
     "samples",
-    "src"
+    "specs",
+    "src",
+    "webpack.config.js"
   ]
 }
