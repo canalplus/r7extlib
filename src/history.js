@@ -1,29 +1,22 @@
-(function(exports) {
-  'use strict';
+'use strict';
 
-  var _ = require('lodash');
-
-  // Check if SessionStorage is available
-  var __sessionStorage = window.sessionStorage;
-  var hasSessionStorage = function() {
-    if (!__sessionStorage) {
-      return false;
-    }
-
-    try {
-      __sessionStorage.setItem('test', '1');
-      __sessionStorage.removeItem('test');
-      return true;
-    } catch (exception) {
-      return false;
-    }
-  };
-
-  if (!hasSessionStorage()) {
-    console.warn('History can not be rewritten: window.sessionStorage not available!');
-    return;
+// Check if SessionStorage is available
+var __sessionStorage = window.sessionStorage;
+var hasSessionStorage = function() {
+  if (!__sessionStorage) {
+    return false;
   }
 
+  try {
+    __sessionStorage.setItem('test', '1');
+    __sessionStorage.removeItem('test');
+    return true;
+  } catch (exception) {
+    return false;
+  }
+};
+
+if (hasSessionStorage()) {
   // SessionStorage is available ...
 
   // Default history
@@ -33,19 +26,20 @@
   };
 
   // Get history stored in sessionStorage or set the defaultHistory
-  var __history = (function() {
-    return JSON.parse(__sessionStorage.getItem('R7History'));
-  })() || _.cloneDeep(__defaultHistory);
+  var __history;
+  try {
+    __history = JSON.parse(__sessionStorage.getItem('R7History'));
+  } catch (e) {}
+
+  __history = __history || Object.assign({}, __defaultHistory);
 
   __history.clear = function() {
-    var cpyDefaultHistory = _.cloneDeep(__defaultHistory);
-    _.extend(__history, cpyDefaultHistory);
+    Object.assign(__history, __defaultHistory);
     __history.save();
   };
 
-  /**
+  /** @function
    * Save the current page
-   * @method function
    */
   __history.save = function() {
     // If access another page
@@ -61,9 +55,9 @@
     return __sessionStorage.setItem('R7History', JSON.stringify(this));
   };
 
-  /**
+  /** @function
    * go implementation
-   * @method function
+   *
    * @param  {Integer} n can positive or negative
    */
   __history.go = function(n) {
@@ -79,18 +73,22 @@
     // trigger popstate event (listen by window.onpopstate)
     var popStateEvent;
     if (window.CustomEvent !== undefined) {
-      popStateEvent = new CustomEvent('popstate', {state: {url: this.stack[newState]}});
+      popStateEvent = new CustomEvent('popstate', {
+        state: {url: this.stack[newState]},
+      });
       window.dispatchEvent(popStateEvent);
     } else {
       popStateEvent = document.createEvent('Event');
-      popStateEvent.initEvent('popstate', true, true, {state: {url: this.stack[newState]}});
+      popStateEvent.initEvent('popstate', true, true, {
+        state: {url: this.stack[newState]},
+      });
       window.dispatchEvent(popStateEvent);
     }
   };
 
-  /**
+  /** @function
    * pushState implementation
-   * @method function
+   *
    * @param  {Object} stateObj not implemented yet
    * @param  {String} title    not implemented yet
    * @param  {String} url      url to push in history
@@ -105,9 +103,9 @@
     return __sessionStorage.setItem('R7History', JSON.stringify(this));
   };
 
-  /**
+  /** @function
    * replaceState implementation
-   * @method function
+   *
    * @param  {Object} stateObj not implemented yet
    * @param  {String} title    not implemented yet
    * @param  {String} url      url to push in history
@@ -189,6 +187,9 @@
 
   });
 
+  //used for debug an unit tests
+  window.__history = __history;
+
   //Only for boxes (History and its prototype must be rewritten).
   if (__isBox) {
     window.history = new window.History();
@@ -199,11 +200,8 @@
   if (window.Backbone && window.Backbone.history) {
     window.Backbone.history.history = window.history;
   }
-
-  exports.history = window.history;
-
-  //used for debug an unit tests
-  window.__history = __history;
-  exports.__history = window.__history;
-
-})(this);
+} else {
+  console.warn(
+    'History can not be rewritten: window.sessionStorage not available!'
+  );
+}

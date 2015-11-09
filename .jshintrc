@@ -4,16 +4,17 @@
   "curly": true,
   "devel": true,
   "eqeqeq": true,
+  "esnext": true,
   "noarg": true,
   "debug": true,
   "trailing": false,
   "strict": true,
   "undef": true,
+  "unused": true,
   "expr": true,
-  "newcap": true,
+  "node": true,
   "validthis": false,
   "predef": [
-    "require",
     "R7",
     "describe","before","beforeEach","after","afterEach","it","xit","expect"
   ]

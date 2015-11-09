@@ -10,10 +10,14 @@ In order to build this application on your own:
 
 ```shell
 npm install
-bower install
-gulp
+npm run build:min
 ```
 You will find your build application in the dist repository
+
+To build a non minified version
+```shell
+npm run build
+```
 
 ## Examples
 
@@ -24,7 +28,5 @@ Examples of this lib can be found in the samples directory
 You can execute tests related to this application with the following commands
 
 ```shell
-npm install
-bower install
-gulp test
+npm run test
 ```
