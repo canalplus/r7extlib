@@ -192,7 +192,7 @@ function ready(callback, context) {
         window.history.init(response.clearHistory);
       }
 
-      callback.bind(context);
+      callback.call(context);
     });
   }, false);
 }
