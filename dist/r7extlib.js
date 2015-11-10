@@ -1,1 +1,1108 @@
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.R7=t():e.R7=t()}(this,function(){return function(e){function t(r){if(n[r])return n[r].exports;var o=n[r]={exports:{},id:r,loaded:!1};return e[r].call(o.exports,o,o.exports,t),o.loaded=!0,o.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){e.exports=n(1)},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{"default":e}}function o(e){return e&&"undefined"!=typeof Symbol&&e.constructor===Symbol?"symbol":typeof e}function i(e,t){return function(){return console.warn("R7 deprecated method "+e),t.apply(null,arguments)}}function u(e){if("object"===("undefined"==typeof e?"undefined":o(e))&&(e=Object.keys(e)[0]),!x[e])throw new Error("non available key");return e}function a(e){var t=e.match(/(\w+):(\w+)/);return{source:t[1],event:t[2]}}function s(e){var t=e.data;return t.id?R.rpc(t):t.key?R.key(t):R.stream(t)}function c(e,t,n,r){"function"==typeof t&&(r=n,n=t,t=null),n=n.bind(r);var o=L(e,t);return O[o]=function(e,t){n(e||t)},o}function f(e,t,n,r){"function"==typeof t&&(r=n,n=t,t=null);var o=L(e,t);return O[o]=n.bind(r),o}function d(e,t,n,r){return f("navigate",{control:e,context:t},n,r)}function l(e,t,n){var r=u(e);"object"===("undefined"==typeof e?"undefined":o(e))?L("addKeys",e):L("addKeys",[r]),j[r]=t.bind(n)}function h(e){e=u(e),delete j[e],L("removeKeys",[e])}function y(e,t){window.addEventListener("load",function(){f("ready",function(n,r){r&&window.history.init(r.clearHistory),e.call(t)})},!1)}function v(e,t,n){"focus"===e||"blur"===e?S[e]=t.bind(n):(L("addStreamListener",a(e)),S["stream:"+e]=t.bind(n))}function m(e){"focus"===e||"blur"===e?delete S[e]:delete S["stream:"+e]}function w(e,t,n){function r(){for(var e in j)h(e);for(var t in S)m(t)}function o(){r(),K.unload(),K=null;for(var e in u)l(e,u[e]);for(var t in a)v(t,a[t])}function i(){o(),a.focus&&a.focus()}if(K)return void console.error("iframe: already loaded");var u=Object.assign({},j),a=Object.assign({},S);r(),K=new k["default"](e),K.use("exit",i),l("Back",function(){return K.onKeyBack()?K.goBack():void i()}),("undefined"==typeof e.exit||null===e.exit||e.exit)&&l("Exit",function(){return K.onKeyExit()?K.resume():void i()}),K.load(function(e){e&&o(),t.call(n,e),!e&&a.blur&&a.blur()})}function p(){L("exit")}function b(e,t,n,r){return f(e,t,n,r)}n(2),n(3);var g=n(4),k=r(g),E="0.1.9",x={Up:!0,Down:!0,Right:!0,Left:!0,Enter:!0,Mute:!0,Vdown:!0,Vup:!0,Zoom:!0,Back:!0,Exit:!0,Guide:!0,Menu:!0,Numeric:!0,Rewind:!0,Play:!0,Forward:!0,Stop:!0,Pause:!0,Rec:!0,TV:!0},O={},j={},S={},K=null,R={rpc:function(e){var t=e.id,n=O[t];n&&e.id&&(e.hasOwnProperty("error")||e.hasOwnProperty("result"))&&(delete O[t],e.error?n(new Error(e.error.message)):n(null,e.result))},key:function P(e){var P=e.key,t=P.match(/Numeric([0-9])/i);t&&(P="Numeric",e.number=+t[1]);var n=j[P];n&&n(e)},stream:function(e){for(var t in e)if(S[t]){var n=S[t];n(e[t])}}},L=function(){var e=1;return function(t,n){return window.parent.postMessage({jsonrpc:"2.0",id:e,method:t,params:n},"*"),e++}}();b.version=E,b.ready=y,b.grabKey=l,b.releaseKey=h,b.navigate=d,b.addStreamListener=v,b.removeStreamListener=m,b.loadIframe=w,b.exit=p,b.rpc=i("rpc",c),b.send=i("send",c),b.onReadyState=i("onReadyState",y),window.addEventListener("message",s,!1),e.exports=b},function(e,t){"use strict";Object.assign||Object.defineProperty(Object,"assign",{enumerable:!1,configurable:!0,writable:!0,value:function(e){if(void 0===e||null===e)throw new TypeError("Cannot convert first argument to object");for(var t=Object(e),n=1;n<arguments.length;n++){var r=arguments[n];if(void 0!==r&&null!==r){r=Object(r);for(var o=Object.keys(r),i=0,u=o.length;u>i;i++){var a=o[i],s=Object.getOwnPropertyDescriptor(r,a);void 0!==s&&s.enumerable&&(t[a]=r[a])}}}return t}})},function(e,t){"use strict";var n=window.sessionStorage,r=function(){if(!n)return!1;try{return n.setItem("test","1"),n.removeItem("test"),!0}catch(e){return!1}};if(r()){var o,i={stack:[window.location.href],state:0};try{o=JSON.parse(n.getItem("R7History"))}catch(u){}o=o||Object.assign({},i),o.clear=function(){Object.assign(o,i),o.save()},o.save=function(){return this.stack[this.state]!==window.location.href&&(this.stack.length=this.state+1,this.stack.push(window.location.href),this.state=this.stack.length-1),n.setItem("R7History",JSON.stringify(this))},o.go=function(e){e=e||0;var t=this.state+e;if(0===e||!o.stack[t])return!1;this.state=t,window.location.href=this.stack[t];var n;void 0!==window.CustomEvent?(n=new CustomEvent("popstate",{state:{url:this.stack[t]}}),window.dispatchEvent(n)):(n=document.createEvent("Event"),n.initEvent("popstate",!0,!0,{state:{url:this.stack[t]}}),window.dispatchEvent(n))},o.pushState=function(e,t,r){return r?(this.stack.push(r),this.state=this.stack.length-1,n.setItem("R7History",JSON.stringify(this))):void 0},o.replaceState=function(e,t,r){return r?(this.stack[this.state]=r,n.setItem("R7History",JSON.stringify(this))):void 0},window.history=function(){};var a=window.history instanceof Function;a&&(window.History=function(){},window.History.prototype={}),Object.defineProperties(window.History.prototype,{init:{value:function(e){e?o.clear():o.save()}},save:{value:function(){o.save()}},state:{get:function(){return o.state}},go:{value:function(e){o.go(e)}},back:{value:function(){o.go(-1)}},forward:{value:function(){o.go(1)}},length:{get:function(){return o.stack.length}},pushState:{value:function(e,t,n){o.pushState(e,t,n)}},replaceState:{value:function(e,t,n){o.replaceState(e,t,n)}}}),window.__history=o,a&&(window.history=new window.History),window.addEventListener("hashchange",function(){history.save()},!1),window.Backbone&&window.Backbone.history&&(window.Backbone.history.history=window.history)}else console.warn("History can not be rewritten: window.sessionStorage not available!")},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{"default":e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}();Object.defineProperty(t,"__esModule",{value:!0});var u=n(5),a=r(u),s="allow-scripts allow-same-origin allow-forms",c=45e3,f={display:"none",width:"1280px",height:"720px",border:"0"},d=function(e){var t=document.createElement("a");t.href=e;for(var n=/^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/,r=/(?:^|&)([^&=]*)=?([^&]*)/g,o=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],i={},u=o.length,a=n.exec(t.href);u--;)i[o[u]]=a[u]||"";return i.queryKey={},i.query.replace(r,function(e,t,n){t&&(i.queryKey[t]=n)}),i},l=function(){function e(t){o(this,e);var n=t.url;if(!this.iframe){this.iframe=document.createElement("iframe"),this.iframe.sandbox=s,this.iframe.src=n;var r=Object.assign({},f,t.style);for(var i in r)this.iframe.style[i]=r[i]}this.el=t.el||document.body;var u=d(n),c=u.protocol+"://"+u.authority;this.router=new a["default"](this.iframe,c)}return i(e,[{key:"load",value:function(e,t){var n=this;e=e.bind(t),this.iframe.dataset.loaded||(this.timeout&&clearTimeout(this.timeout),this.timeout=setTimeout(this.onTimeoutExpired.bind(this,e),c),window.addEventListener("message",this.router,!1),this.iframe.addEventListener("load",function(){n.loaded(e)},!1),this.el.appendChild(this.iframe))}},{key:"loaded",value:function(e){var t=this;this.iframe.removeEventListener("load",this._loaded,!1),this.iframe.dataset.loaded="loaded",this.router.use("ready",function(){clearTimeout(t.timeout),t.router.unuse("ready"),t.iframe.style.display="block",e()})}},{key:"onTimeoutExpired",value:function(e){e(new Error("iframe: timeout expired"))}},{key:"unload",value:function(){this.timeout&&clearTimeout(this.timeout),this.el.removeChild(this.iframe),window.removeEventListener("message",this.router,!1),this.iframe.removeEventListener("load",this._loaded,!1),delete this.router,delete this._loaded}},{key:"use",value:function(e,t,n){this.router.use(e,t,n)}},{key:"onKeyBack",value:function(){return!!this.router.onKeyBack}},{key:"goBack",value:function(){return this.router.onKeyBack()}},{key:"onKeyExit",value:function(){return!!this.router.onKeyExit}},{key:"resume",value:function(){return this.router.resume()}}]),e}();t["default"]=l},function(e,t){"use strict";function n(e,t){function n(e){return e?"function"==typeof e.toJSON?e.toJSON():e:null}function u(e,t,n){try{m({id:e,result:t,response:t},n)}catch(r){s(e,o,r,n)}}function a(e){return e instanceof Error?e.message:e instanceof XMLHttpRequest?"Request error: "+[e.status,e.method,e.url].join(" "):"string"==typeof e?e:"unknown error"}function s(e,t,n,r){var o=a(n);return m({id:e,error:{code:t,message:o}},r),new Promise(function(e,t){t(new Error(o))})}function c(e,t){var r={},o=n(t);r[e]="undefined"==typeof o?!0:o,m(r,null)}function f(e){return{handler:function(t){return new Promise(function(n,r){R7(e,t,function(e,t){e&&r(e),n(t)})})}}}function d(e){var t=e.source+":"+e.event,n="stream:"+t;R7.addStreamListener(t,c.bind(null,n))}function l(e){var t=e.control,n=e.context;return new Promise(function(e,r){R7.navigate(t,n,function(t,n){t&&r(t),e(n)})})}function h(e){if(e){Array.isArray(e)&&(e=i(e,!1));for(var t in e){var n=c.bind(null,"key",t);"Back"===t||"Exit"===t?w["onKey"+t]=n:R7.grabKey(t,n)}}}function y(e){if(e){Array.isArray(e)||(e=Object.keys(e));for(var t=0;t<e.length;t++){var n=e[t];"Back"===n||"Exit"===n?w["onKey"+n]=null:R7.releaseKey(n)}}}var v=function(e){return e.source!==window&&e.origin===t?e:void 0},m=function(t){e.contentWindow.postMessage(t,"*")},w=function(e){if(e=v(e)){if(!p)return new Promise(function(e,t){t(new Error("router: not mounted"))});var t=e.data,i=e.source;if("number"!=typeof t.id)return s(-1,r,"invalid request",i);var a=t.method||t.action;if("string"!=typeof a)return s(t.id,r,"invalid request",i);var c=p[a];c||(c=f(a));var d,l=c.handler;try{d="function"==typeof l?l.call(c.context,t.params):l}catch(h){d=new Error(h)}return new Promise(function(e,t){d instanceof Error&&t(d),e(d)}).then(n).then(function(e){u(t.id,e,i)},function(e){s(t.id,o,e,i)})}},p={};return w.use=function(e,t,n){return p[e]={handler:t,context:n},w},w.unuse=function(e){return delete p[e],w},w.broadcast=c,w.mount=function(){p||(p={}),w.use("addStreamListener",d),w.use("navigate",l),w.use("addKeys",h),w.use("removeKeys",y),R7.addStreamListener("focus",c.bind(null,"focus")),R7.addStreamListener("blur",c.bind(null,"blur"))},w.unmount=function(){p&&(p=null)},w.onKeyBack=w.onKeyExit=null,w.mount(),w}Object.defineProperty(t,"__esModule",{value:!0}),t["default"]=n;var r=-32600,o=-32603,i=function(e,t){return t="undefined"!=typeof t&&null!==t?t:!0,(e||[]).reduce(function(e,n){return e[n]=t,e},{})}}])});
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["R7"] = factory();
+	else
+		root["R7"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(3);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _router = __webpack_require__(5);
+
+	var _router2 = _interopRequireDefault(_router);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	/**
+	 * Sandbox options for iframe
+	 * @type {String}
+	 */
+	var SANDBOX = 'allow-scripts allow-same-origin allow-forms';
+
+	/**
+	 * Delay for a remote service to load
+	 * @type {Number}
+	 */
+	var READY_DELAY = 45 * 1000;
+
+	/**
+	 * Default style properties for iframe
+	 */
+	var IFRAME_STYLE = {
+	  display: 'none',
+	  width: '1280px',
+	  height: '720px',
+	  border: '0'
+	};
+
+	var parseUri = function parseUri(str) {
+	  var parser = document.createElement('a');
+	  parser.href = str;
+
+	  var uParser = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
+	  var qParser = /(?:^|&)([^&=]*)=?([^&]*)/g;
+	  var keys = ['source', 'protocol', 'authority', 'userInfo', 'user', 'password', 'host', 'port', 'relative', 'path', 'directory', 'file', 'query', 'anchor'];
+
+	  var u = {};
+	  var i = keys.length;
+	  var m = uParser.exec(parser.href);
+	  while (i--) {
+	    u[keys[i]] = m[i] || '';
+	  }
+
+	  u.queryKey = {};
+	  u.query.replace(qParser, function ($0, $1, $2) {
+	    if ($1) {
+	      u.queryKey[$1] = $2;
+	    }
+	  });
+
+	  return u;
+	};
+
+	var R7IFrame = (function () {
+	  function R7IFrame(options) {
+	    _classCallCheck(this, R7IFrame);
+
+	    var url = options.url;
+
+	    if (!this.iframe) {
+	      this.iframe = document.createElement('iframe');
+	      this.iframe.sandbox = SANDBOX;
+	      this.iframe.src = url;
+
+	      var style = Object.assign({}, IFRAME_STYLE, options.style);
+	      for (var property in style) {
+	        this.iframe.style[property] = style[property];
+	      }
+	    }
+
+	    this.el = options.el || document.body;
+
+	    var parsed = parseUri(url);
+	    var origin = parsed.protocol + '://' + parsed.authority;
+
+	    this.router = new _router2.default(this.iframe, origin);
+	  }
+
+	  _createClass(R7IFrame, [{
+	    key: 'load',
+	    value: function load(callback, context) {
+	      var _this = this;
+
+	      callback = callback.bind(context);
+
+	      if (!this.iframe.dataset.loaded) {
+	        if (this.timeout) {
+	          clearTimeout(this.timeout);
+	        }
+
+	        this.timeout = setTimeout(this.onTimeoutExpired.bind(this, callback), READY_DELAY);
+	        window.addEventListener('message', this.router, false);
+	        this.iframe.addEventListener('load', function () {
+	          _this.loaded(callback);
+	        }, false);
+	        this.el.appendChild(this.iframe);
+	      }
+	    }
+	  }, {
+	    key: 'loaded',
+	    value: function loaded(callback) {
+	      var _this2 = this;
+
+	      this.iframe.removeEventListener('load', this._loaded, false);
+	      this.iframe.dataset.loaded = 'loaded';
+
+	      this.router.use('ready', function () {
+	        clearTimeout(_this2.timeout);
+	        _this2.router.unuse('ready');
+	        _this2.iframe.style.display = 'block';
+	        callback();
+	      });
+	    }
+	  }, {
+	    key: 'onTimeoutExpired',
+	    value: function onTimeoutExpired(callback) {
+	      callback(new Error('iframe: timeout expired'));
+	    }
+	  }, {
+	    key: 'unload',
+	    value: function unload() {
+	      if (this.timeout) {
+	        clearTimeout(this.timeout);
+	      }
+
+	      this.el.removeChild(this.iframe);
+	      window.removeEventListener('message', this.router, false);
+	      this.iframe.removeEventListener('load', this._loaded, false);
+	      delete this.router;
+	      delete this._loaded;
+	    }
+	  }, {
+	    key: 'use',
+	    value: function use(action, fn, ctx) {
+	      this.router.use(action, fn, ctx);
+	    }
+	  }, {
+	    key: 'onKeyBack',
+	    value: function onKeyBack() {
+	      return !!this.router.onKeyBack;
+	    }
+	  }, {
+	    key: 'goBack',
+	    value: function goBack() {
+	      return this.router.onKeyBack();
+	    }
+	  }, {
+	    key: 'onKeyExit',
+	    value: function onKeyExit() {
+	      return !!this.router.onKeyExit;
+	    }
+	  }, {
+	    key: 'resume',
+	    value: function resume() {
+	      return this.router.resume();
+	    }
+	  }]);
+
+	  return R7IFrame;
+	})();
+
+	exports.default = R7IFrame;
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	'use strict'
+
+	// Check if SessionStorage is available
+	;
+	var __sessionStorage = window.sessionStorage;
+	var hasSessionStorage = function hasSessionStorage() {
+	  if (!__sessionStorage) {
+	    return false;
+	  }
+
+	  try {
+	    __sessionStorage.setItem('test', '1');
+	    __sessionStorage.removeItem('test');
+	    return true;
+	  } catch (exception) {
+	    return false;
+	  }
+	};
+
+	if (hasSessionStorage()) {
+	  // SessionStorage is available ...
+
+	  // Default history
+	  var __defaultHistory = {
+	    stack: [window.location.href],
+	    state: 0
+	  };
+
+	  // Get history stored in sessionStorage or set the defaultHistory
+	  var __history;
+	  try {
+	    __history = JSON.parse(__sessionStorage.getItem('R7History'));
+	  } catch (e) {}
+
+	  __history = __history || Object.assign({}, __defaultHistory);
+
+	  __history.clear = function () {
+	    Object.assign(__history, __defaultHistory);
+	    __history.save();
+	  };
+
+	  /** @function
+	   * Save the current page
+	   */
+	  __history.save = function () {
+	    // If access another page
+	    if (this.stack[this.state] !== window.location.href) {
+
+	      // delete last entries (case we did some backs before)
+	      this.stack.length = this.state + 1;
+
+	      this.stack.push(window.location.href);
+	      this.state = this.stack.length - 1;
+	    }
+
+	    return __sessionStorage.setItem('R7History', JSON.stringify(this));
+	  };
+
+	  /** @function
+	   * go implementation
+	   *
+	   * @param  {Integer} n can positive or negative
+	   */
+	  __history.go = function (n) {
+	    n = n || 0;
+	    var newState = this.state + n;
+	    if (n === 0 || !__history.stack[newState]) {
+	      return false;
+	    }
+
+	    this.state = newState;
+	    window.location.href = this.stack[newState];
+
+	    // trigger popstate event (listen by window.onpopstate)
+	    var popStateEvent;
+	    if (window.CustomEvent !== undefined) {
+	      popStateEvent = new CustomEvent('popstate', {
+	        state: { url: this.stack[newState] }
+	      });
+	      window.dispatchEvent(popStateEvent);
+	    } else {
+	      popStateEvent = document.createEvent('Event');
+	      popStateEvent.initEvent('popstate', true, true, {
+	        state: { url: this.stack[newState] }
+	      });
+	      window.dispatchEvent(popStateEvent);
+	    }
+	  };
+
+	  /** @function
+	   * pushState implementation
+	   *
+	   * @param  {Object} stateObj not implemented yet
+	   * @param  {String} title    not implemented yet
+	   * @param  {String} url      url to push in history
+	   */
+	  __history.pushState = function (stateObj, title, url) {
+	    if (!url) {
+	      return;
+	    }
+
+	    this.stack.push(url);
+	    this.state = this.stack.length - 1;
+	    return __sessionStorage.setItem('R7History', JSON.stringify(this));
+	  };
+
+	  /** @function
+	   * replaceState implementation
+	   *
+	   * @param  {Object} stateObj not implemented yet
+	   * @param  {String} title    not implemented yet
+	   * @param  {String} url      url to push in history
+	   */
+	  __history.replaceState = function (stateObj, title, url) {
+	    if (!url) {
+	      return;
+	    }
+
+	    this.stack[this.state] = url;
+	    return __sessionStorage.setItem('R7History', JSON.stringify(this));
+	  };
+
+	  // Only for boxes (History and its prototype must be rewritten). In chrome, we can only extend prototype
+	  window.history = function () {};
+
+	  var __isBox = window.history instanceof Function;
+
+	  if (__isBox) {
+	    window.History = function () {};
+
+	    window.History.prototype = {};
+	  }
+
+	  Object.defineProperties(window.History.prototype, {
+	    init: {
+	      value: function value(clear) {
+	        clear ? __history.clear() : __history.save();
+	      }
+	    },
+
+	    save: {
+	      value: function value() {
+	        __history.save();
+	      }
+	    },
+
+	    state: {
+	      get: function get() {
+	        return __history.state;
+	      }
+	    },
+
+	    go: {
+	      value: function value(n) {
+	        __history.go(n);
+	      }
+	    },
+
+	    back: {
+	      value: function value() {
+	        __history.go(-1);
+	      }
+	    },
+
+	    forward: {
+	      value: function value() {
+	        __history.go(1);
+	      }
+	    },
+
+	    length: {
+	      get: function get() {
+	        return __history.stack.length;
+	      }
+	    },
+
+	    pushState: {
+	      value: function value(stateObj, title, url) {
+	        __history.pushState(stateObj, title, url);
+	      }
+	    },
+
+	    replaceState: {
+	      value: function value(stateObj, title, url) {
+	        __history.replaceState(stateObj, title, url);
+	      }
+	    }
+
+	  });
+
+	  //used for debug an unit tests
+	  window.__history = __history;
+
+	  //Only for boxes (History and its prototype must be rewritten).
+	  if (__isBox) {
+	    window.history = new window.History();
+	  }
+
+	  window.addEventListener('hashchange', function () {
+	    history.save();
+	  }, false);
+
+	  if (window.Backbone && window.Backbone.history) {
+	    window.Backbone.history.history = window.history;
+	  }
+	} else {
+	  console.warn('History can not be rewritten: window.sessionStorage not available!');
+	}
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	__webpack_require__(4);
+
+	__webpack_require__(2);
+
+	var _embed = __webpack_require__(1);
+
+	var _embed2 = _interopRequireDefault(_embed);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+
+	var VERSION = '0.2.2';
+
+	function _deprecate(name, fn) {
+	  return function () {
+	    console.warn('R7 deprecated method ' + name);
+	    return fn.apply(null, arguments);
+	  };
+	}
+
+	var AVAILABLE_KEYS = {
+	  Up: true,
+	  Down: true,
+	  Right: true,
+	  Left: true,
+	  Enter: true,
+	  Mute: true,
+	  Vdown: true,
+	  Vup: true,
+	  Zoom: true,
+	  Back: true,
+	  Exit: true,
+	  Guide: true,
+	  Menu: true,
+	  Numeric: true,
+	  Rewind: true,
+	  Play: true,
+	  Forward: true,
+	  Stop: true,
+	  Pause: true,
+	  Rec: true,
+	  TV: true
+	};
+
+	var _rpcs = {};
+	var _keys = {};
+	var _streams = {};
+	var _iframe = null;
+
+	function getKey(key) {
+	  if ((typeof key === 'undefined' ? 'undefined' : _typeof(key)) === 'object') {
+	    key = Object.keys(key)[0];
+	  }
+
+	  if (!AVAILABLE_KEYS[key]) {
+	    throw new Error('non available key');
+	  }
+
+	  return key;
+	}
+
+	function streamParams(type) {
+	  var m = type.match(/(\w+):(\w+)/);
+	  return { source: m[1], event: m[2] };
+	}
+
+	var handlers = {
+	  rpc: function rpc(msg) {
+	    var id = msg.id;
+	    var cb = _rpcs[id];
+	    if (!cb) {
+	      return;
+	    }
+
+	    if (!msg.id || !(msg.hasOwnProperty('error') || msg.hasOwnProperty('result'))) {
+	      return;
+	    }
+
+	    delete _rpcs[id];
+	    if (msg.error) {
+	      cb(new Error(msg.error.message));
+	    } else {
+	      cb(null, msg.result);
+	    }
+	  },
+
+	  key: function key(msg) {
+	    var key = msg.key;
+	    var res = key.match(/Numeric([0-9])/i);
+	    if (res) {
+	      key = 'Numeric';
+	      msg.number = +res[1];
+	    }
+
+	    var cb = _keys[key];
+	    if (!cb) {
+	      return;
+	    }
+
+	    cb(msg);
+	  },
+
+	  stream: function stream(msg) {
+	    for (var key in msg) {
+	      if (!_streams[key]) {
+	        continue;
+	      }
+
+	      var cb = _streams[key];
+	      cb(msg[key]);
+	    }
+	  }
+	};
+
+	function onMessage(evt) {
+	  var msg = evt.data;
+	  if (msg.id) {
+	    return handlers.rpc(msg);
+	  }
+
+	  if (msg.key) {
+	    return handlers.key(msg);
+	  }
+
+	  return handlers.stream(msg);
+	}
+
+	var send = (function () {
+	  var uid = 1;
+	  return function (method, params) {
+	    window.parent.postMessage({
+	      jsonrpc: '2.0',
+	      id: uid,
+	      method: method,
+	      params: params
+	    }, '*');
+	    return uid++;
+	  };
+	})();
+
+	// !! DEPRECATED !! do not handle errors
+	function deprecatedRPC(method, params, callback, context) {
+	  if (typeof params === 'function') {
+	    context = callback;
+	    callback = params;
+	    params = null;
+	  }
+
+	  callback = callback.bind(context);
+
+	  var uid = send(method, params);
+	  _rpcs[uid] = function (err, res) {
+	    callback(err || res);
+	  };
+
+	  return uid;
+	}
+
+	function rpc(method, params, callback, context) {
+	  if (typeof params === 'function') {
+	    context = callback;
+	    callback = params;
+	    params = null;
+	  }
+
+	  var uid = send(method, params);
+	  _rpcs[uid] = callback.bind(context);
+
+	  return uid;
+	}
+
+	function navigate(route, options, callback, context) {
+	  return rpc('navigate', {
+	    control: route,
+	    context: options
+	  }, callback, context);
+	}
+
+	function grabKey(key, callback, context) {
+	  var k = getKey(key);
+	  if ((typeof key === 'undefined' ? 'undefined' : _typeof(key)) === 'object') {
+	    send('addKeys', key);
+	  } else {
+	    send('addKeys', [k]);
+	  }
+
+	  _keys[k] = callback.bind(context);
+	}
+
+	function releaseKey(key) {
+	  key = getKey(key);
+	  delete _keys[key];
+	  send('removeKeys', [key]);
+	}
+
+	function ready(callback, context) {
+	  window.addEventListener('load', function () {
+	    rpc('ready', function (notUsed, response) {
+	      if (response) {
+	        window.history.init(response.clearHistory);
+	      }
+
+	      callback.call(context);
+	    });
+	  }, false);
+	}
+
+	function addStreamListener(type, callback, context) {
+	  if (type === 'focus' || type === 'blur') {
+	    _streams[type] = callback.bind(context);
+	  } else {
+	    send('addStreamListener', streamParams(type));
+	    _streams['stream:' + type] = callback.bind(context);
+	  }
+	}
+
+	function removeStreamListener(type) {
+	  if (type === 'focus' || type === 'blur') {
+	    delete _streams[type];
+	  } else {
+	    delete _streams['stream:' + type];
+	  }
+	}
+
+	function loadIframe(options, callback, context) {
+	  if (_iframe) {
+	    console.error('iframe: already loaded');
+	    return;
+	  }
+
+	  var keys = Object.assign({}, _keys);
+	  var streams = Object.assign({}, _streams);
+
+	  function clearContext() {
+	    for (var key in _keys) {
+	      releaseKey(key);
+	    }
+
+	    for (var stream in _streams) {
+	      removeStreamListener(stream);
+	    }
+	  }
+
+	  function restoreContext() {
+	    clearContext();
+	    _iframe.unload();
+	    _iframe = null;
+	    for (var key in keys) {
+	      grabKey(key, keys[key]);
+	    }
+
+	    for (var stream in streams) {
+	      addStreamListener(stream, streams[stream]);
+	    }
+	  }
+
+	  function exit() {
+	    restoreContext();
+	    if (!!streams.focus) {
+	      streams.focus();
+	    }
+	  }
+
+	  clearContext();
+
+	  _iframe = new _embed2.default(options);
+	  _iframe.use('exit', exit);
+
+	  grabKey('Back', function () {
+	    if (_iframe.onKeyBack()) {
+	      return _iframe.goBack();
+	    }
+
+	    exit();
+	  });
+
+	  if (!(typeof options.exit !== 'undefined' && options.exit !== null) || options.exit) {
+	    grabKey('Exit', function () {
+	      if (_iframe.onKeyExit()) {
+	        return _iframe.resume();
+	      }
+
+	      exit();
+	    });
+	  }
+
+	  _iframe.load(function (err) {
+	    if (err) {
+	      restoreContext();
+	    }
+
+	    callback.call(context, err);
+	    if (!err && !!streams.blur) {
+	      streams.blur();
+	    }
+	  });
+	}
+
+	//Will only work inside an iframe
+	function exit() {
+	  send('exit');
+	}
+
+	function R7(method, params, callback, context) {
+	  return rpc(method, params, callback, context);
+	}
+
+	R7.version = VERSION;
+
+	R7.ready = ready;
+	R7.grabKey = grabKey;
+	R7.releaseKey = releaseKey;
+	R7.navigate = navigate;
+
+	R7.addStreamListener = addStreamListener;
+	R7.removeStreamListener = removeStreamListener;
+
+	R7.loadIframe = loadIframe;
+	R7.exit = exit;
+
+	// Deprecated methods
+	R7.rpc = _deprecate('rpc', deprecatedRPC);
+	R7.send = _deprecate('send', deprecatedRPC);
+	R7.onReadyState = _deprecate('onReadyState', ready);
+
+	// Bind global handler
+	window.addEventListener('message', onMessage, false);
+
+	module.exports = R7;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	if (!Object.assign) {
+	  Object.defineProperty(Object, 'assign', {
+	    enumerable: false,
+	    configurable: true,
+	    writable: true,
+	    value: function value(target) {
+	      'use strict';
+
+	      if (target === undefined || target === null) {
+	        throw new TypeError('Cannot convert first argument to object');
+	      }
+
+	      var to = Object(target);
+	      for (var i = 1; i < arguments.length; i++) {
+	        var nextSource = arguments[i];
+	        if (nextSource === undefined || nextSource === null) {
+	          continue;
+	        }
+
+	        nextSource = Object(nextSource);
+
+	        var keysArray = Object.keys(nextSource);
+	        for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+	          var nextKey = keysArray[nextIndex];
+	          var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+	          if (desc !== undefined && desc.enumerable) {
+	            to[nextKey] = nextSource[nextKey];
+	          }
+	        }
+	      }
+
+	      return to;
+	    }
+	  });
+	}
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	'use strict'
+
+	/* Reserved -32000 to -32099 */
+	;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = Router;
+	var ERR_INVALID_REQUEST = -32600;
+	var ERR_INTERNAL = -32603;
+
+	var hashMap = function hashMap(array, val) {
+	  val = typeof val !== 'undefined' && val !== null ? val : true;
+	  return (array || []).reduce(function (obj, key) {
+	    obj[key] = val;
+	    return obj;
+	  }, {});
+	};
+
+	function Router(iframe, origin) {
+	  var inProc = function inProc(e) {
+	    if (e.source !== window && e.origin === origin) {
+	      return e;
+	    }
+	  };
+
+	  var outProc = function outProc(m) {
+	    iframe.contentWindow.postMessage(m, '*');
+	  };
+
+	  // Main rpc handler.
+	  var r = function r(evt) {
+	    evt = inProc(evt);
+	    if (!evt) {
+	      return;
+	    }
+
+	    if (!a) {
+	      return new Promise(function (resolve, reject) {
+	        reject(new Error('router: not mounted'));
+	      });
+	    }
+
+	    var msg = evt.data;
+	    var src = evt.source;
+
+	    if (typeof msg.id !== 'number') {
+	      return error(-1, ERR_INVALID_REQUEST, 'invalid request', src);
+	    }
+
+	    var method = msg.method || msg.action; // retro-compat
+	    if (typeof method !== 'string') {
+	      return error(msg.id, ERR_INVALID_REQUEST, 'invalid request', src);
+	    }
+
+	    var h = a[method];
+	    if (!h) {
+	      h = forward(method);
+	    }
+
+	    var ret;
+	    var fn = h.handler;
+	    try {
+	      ret = typeof fn === 'function' ? fn.call(h.context, msg.params) : fn;
+	    } catch (e) {
+	      ret = new Error(e);
+	    }
+
+	    return new Promise(function (resolve, reject) {
+	      if (ret instanceof Error) {
+	        reject(ret);
+	      }
+
+	      resolve(ret);
+	    }).then(toJSON).then(function (res) {
+	      respond(msg.id, res, src);
+	    }, function (err) {
+	      error(msg.id, ERR_INTERNAL, err, src);
+	    });
+	  };
+
+	  function toJSON(data) {
+	    if (!data) {
+	      return null;
+	    }
+
+	    return typeof data.toJSON === 'function' ? data.toJSON() : data;
+	  }
+
+	  function respond(id, res, src) {
+	    try {
+	      outProc({
+	        id: id,
+	        result: res,
+	        response: res }, // retro-compat
+	      src);
+	    } catch (err) {
+	      error(id, ERR_INTERNAL, err, src);
+	    }
+	  }
+
+	  function toErrorMessage(err) {
+	    if (err instanceof Error) {
+	      return err.message;
+	    }
+
+	    if (err instanceof XMLHttpRequest) {
+	      return 'Request error: ' + [err.status, err.method, err.url].join(' ');
+	    }
+
+	    if (typeof err === 'string') {
+	      return err;
+	    }
+
+	    return 'unknown error';
+	  }
+
+	  function error(id, code, err, src) {
+	    var message = toErrorMessage(err);
+	    outProc({
+	      id: id,
+	      error: {
+	        code: code,
+	        message: message
+	      }
+	    }, src);
+	    return new Promise(function (resolve, reject) {
+	      reject(new Error(message));
+	    });
+	  }
+
+	  // send a broadcasted message
+	  function broadcast(evt, data) {
+	    var msg = {};
+	    var json = toJSON(data);
+	    msg[evt] = typeof json === 'undefined' ? true : json;
+	    outProc(msg, null);
+	  }
+
+	  // actions used by the api
+	  var a = {};
+
+	  // default action used to forward to R7
+	  function forward(method) {
+	    return {
+	      handler: function handler(params) {
+	        return new Promise(function (resolve, reject) {
+	          R7(method, params, function (error, result) {
+	            if (error) {
+	              reject(error);
+	            }
+
+	            resolve(result);
+	          });
+	        });
+	      }
+	    };
+	  }
+
+	  function addStreamListener(params) {
+	    var type = params.source + ':' + params.event;
+	    var stream = 'stream:' + type;
+	    R7.addStreamListener(type, broadcast.bind(null, stream));
+	  }
+
+	  function navigate(params) {
+	    var route = params.control;
+	    var context = params.context;
+	    return new Promise(function (resolve, reject) {
+	      R7.navigate(route, context, function (error, result) {
+	        if (error) {
+	          reject(error);
+	        }
+
+	        resolve(result);
+	      });
+	    });
+	  }
+
+	  function registerKeys(keys) {
+	    if (!keys) {
+	      return;
+	    }
+
+	    if (Array.isArray(keys)) {
+	      keys = hashMap(keys, false);
+	    }
+
+	    for (var key in keys) {
+	      var fn = broadcast.bind(null, 'key', key);
+	      if (key === 'Back' || key === 'Exit') {
+	        r['onKey' + key] = fn;
+	      } else {
+	        R7.grabKey(key, fn);
+	      }
+	    }
+	  }
+
+	  function unregisterKeys(keys) {
+	    if (!keys) {
+	      return;
+	    }
+
+	    if (!Array.isArray(keys)) {
+	      keys = Object.keys(keys);
+	    }
+
+	    for (var i = 0; i < keys.length; i++) {
+	      var key = keys[i];
+	      if (key === 'Back' || key === 'Exit') {
+	        r['onKey' + key] = null;
+	      } else {
+	        R7.releaseKey(key);
+	      }
+	    }
+	  }
+
+	  // list of all streamers forwarding events
+	  // var s = _.extend({}, EventEmitter);
+
+	  // Register a handler to match messages of a given
+	  // type.
+	  r.use = function (action, fn, ctx) {
+	    a[action] = { handler: fn, context: ctx };
+	    return r;
+	  };
+
+	  // Unregister a route.
+	  r.unuse = function (action) {
+	    delete a[action];
+	    return r;
+	  };
+
+	  r.broadcast = broadcast;
+
+	  r.mount = function () {
+	    if (!a) {
+	      a = {};
+	    }
+
+	    // if (!s) { s = _.extend({}, EventEmitter); }
+
+	    // then bind methods
+	    r.use('addStreamListener', addStreamListener);
+	    r.use('navigate', navigate);
+
+	    r.use('addKeys', registerKeys);
+	    r.use('removeKeys', unregisterKeys);
+
+	    R7.addStreamListener('focus', broadcast.bind(null, 'focus'));
+	    R7.addStreamListener('blur', broadcast.bind(null, 'blur'));
+	  };
+
+	  r.unmount = function () {
+	    // if (!s || !a) { return; }
+	    if (!a) {
+	      return;
+	    }
+
+	    // s.stopListening();
+	    a = null;
+
+	    // s = null;
+	  };
+
+	  r.onKeyBack = r.onKeyExit = null;
+
+	  r.mount();
+
+	  return r;
+	}
+
+/***/ }
+/******/ ])
+});
+;
