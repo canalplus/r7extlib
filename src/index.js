@@ -1,6 +1,6 @@
 'use strict';
 
-const VERSION = '0.1.9';
+const VERSION = '0.2.1';
 
 import './polyfill.js';
 import './history.js';
