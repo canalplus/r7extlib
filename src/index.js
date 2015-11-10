@@ -1,6 +1,6 @@
 'use strict';
 
-const VERSION = '0.2.2';
+const VERSION = '0.2.3';
 
 import './polyfill.js';
 import './history.js';
@@ -14,27 +14,27 @@ function _deprecate(name, fn) {
 }
 
 var AVAILABLE_KEYS = {
-  Up:       true,
-  Down:     true,
-  Right:    true,
-  Left:     true,
-  Enter:    true,
-  Mute:     true,
-  Vdown:    true,
-  Vup:      true,
-  Zoom:     true,
-  Back:     true,
-  Exit:     true,
-  Guide:    true,
-  Menu:     true,
-  Numeric:  true,
-  Rewind:   true,
-  Play:     true,
-  Forward:  true,
-  Stop:     true,
-  Pause:    true,
-  Rec:      true,
-  TV:       true,
+  Up: true,
+  Down: true,
+  Right: true,
+  Left: true,
+  Enter: true,
+  Mute: true,
+  Vdown: true,
+  Vup: true,
+  Zoom: true,
+  Back: true,
+  Exit: true,
+  Guide: true,
+  Menu: true,
+  Numeric: true,
+  Rewind: true,
+  Play: true,
+  Forward: true,
+  Stop: true,
+  Pause: true,
+  Rec: true,
+  TV: true,
 };
 
 var _rpcs = {};
@@ -67,8 +67,7 @@ var handlers = {
       return;
     }
 
-    if (!msg.id ||
-      !(msg.hasOwnProperty('error') || msg.hasOwnProperty('result'))) {
+    if (!msg.id || !(msg.hasOwnProperty('error') || msg.hasOwnProperty('result'))) {
       return;
     }
 
@@ -110,9 +109,13 @@ var handlers = {
 
 function onMessage(evt) {
   var msg = evt.data;
-  if (msg.id)  { return handlers.rpc(msg); }
+  if (msg.id) {
+    return handlers.rpc(msg);
+  }
 
-  if (msg.key) { return handlers.key(msg); }
+  if (msg.key) {
+    return handlers.key(msg);
+  }
 
   return handlers.stream(msg);
 }
@@ -133,9 +136,9 @@ var send = (function() {
 // !! DEPRECATED !! do not handle errors
 function deprecatedRPC(method, params, callback, context) {
   if (typeof params === 'function') {
-    context  = callback;
+    context = callback;
     callback = params;
-    params   = null;
+    params = null;
   }
 
   callback = callback.bind(context);
@@ -150,9 +153,9 @@ function deprecatedRPC(method, params, callback, context) {
 
 function rpc(method, params, callback, context) {
   if (typeof params === 'function') {
-    context  = callback;
+    context = callback;
     callback = params;
-    params   = null;
+    params = null;
   }
 
   var uid = send(method, params);
@@ -224,23 +227,33 @@ function loadIframe(options, callback, context) {
   var streams = Object.assign({}, _streams);
 
   function clearContext() {
-    for (var key in _keys) { releaseKey(key); }
+    for (var key in _keys) {
+      releaseKey(key);
+    }
 
-    for (var stream in _streams) { removeStreamListener(stream); }
+    for (var stream in _streams) {
+      removeStreamListener(stream);
+    }
   }
 
   function restoreContext() {
     clearContext();
     _iframe.unload();
     _iframe = null;
-    for (var key in keys) { grabKey(key, keys[key]); }
+    for (var key in keys) {
+      grabKey(key, keys[key]);
+    }
 
-    for (var stream in streams) { addStreamListener(stream, streams[stream]); }
+    for (var stream in streams) {
+      addStreamListener(stream, streams[stream]);
+    }
   }
 
   function exit() {
     restoreContext();
-    if (!!streams.focus) { streams.focus(); }
+    if (!!streams.focus) {
+      streams.focus();
+    }
   }
 
   clearContext();
@@ -249,7 +262,9 @@ function loadIframe(options, callback, context) {
   _iframe.use('exit', exit);
 
   grabKey('Back', function() {
-    if (_iframe.onKeyBack()) { return _iframe.goBack(); }
+    if (_iframe.onKeyBack()) {
+      return _iframe.goBack();
+    }
 
     exit();
   });
@@ -257,17 +272,23 @@ function loadIframe(options, callback, context) {
   if (!(typeof options.exit !== 'undefined' && options.exit !== null) ||
     options.exit) {
     grabKey('Exit', function() {
-      if (_iframe.onKeyExit()) { return _iframe.resume(); }
+      if (_iframe.onKeyExit()) {
+        return _iframe.resume();
+      }
 
       exit();
     });
   }
 
   _iframe.load(function(err) {
-    if (err) { restoreContext(); }
+    if (err) {
+      restoreContext();
+    }
 
     callback.call(context, err);
-    if (!err && !!streams.blur) { streams.blur(); }
+    if (!err && !!streams.blur) {
+      streams.blur();
+    }
   });
 }
 
@@ -282,10 +303,10 @@ function R7(method, params, callback, context) {
 
 R7.version = VERSION;
 
-R7.ready      = ready;
-R7.grabKey    = grabKey;
+R7.ready = ready;
+R7.grabKey = grabKey;
 R7.releaseKey = releaseKey;
-R7.navigate   = navigate;
+R7.navigate = navigate;
 
 R7.addStreamListener = addStreamListener;
 R7.removeStreamListener = removeStreamListener;
@@ -294,11 +315,11 @@ R7.loadIframe = loadIframe;
 R7.exit = exit;
 
 // Deprecated methods
-R7.rpc          = _deprecate('rpc',  deprecatedRPC);
-R7.send         = _deprecate('send', deprecatedRPC);
+R7.rpc = _deprecate('rpc', deprecatedRPC);
+R7.send = _deprecate('send', deprecatedRPC);
 R7.onReadyState = _deprecate('onReadyState', ready);
 
 // Bind global handler
 window.addEventListener('message', onMessage, false);
 
-module.exports = R7;
+export default R7;

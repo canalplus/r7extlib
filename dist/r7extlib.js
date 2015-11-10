@@ -453,6 +453,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	__webpack_require__(4);
 
 	__webpack_require__(2);
@@ -782,7 +786,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Bind global handler
 	window.addEventListener('message', onMessage, false);
 
-	module.exports = R7;
+	exports.default = R7;
 
 /***/ },
 /* 4 */
