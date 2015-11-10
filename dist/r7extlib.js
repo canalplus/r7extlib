@@ -453,10 +453,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	__webpack_require__(4);
 
 	__webpack_require__(2);
@@ -469,7 +465,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
-	var VERSION = '0.2.2';
+	var VERSION = '0.2.4';
 
 	function _deprecate(name, fn) {
 	  return function () {
@@ -786,7 +782,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Bind global handler
 	window.addEventListener('message', onMessage, false);
 
-	exports.default = R7;
+	module.exports = R7;
 
 /***/ },
 /* 4 */

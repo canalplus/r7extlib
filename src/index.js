@@ -1,6 +1,6 @@
 'use strict';
 
-const VERSION = '0.2.3';
+const VERSION = '0.2.4';
 
 import './polyfill.js';
 import './history.js';
@@ -322,4 +322,4 @@ R7.onReadyState = _deprecate('onReadyState', ready);
 // Bind global handler
 window.addEventListener('message', onMessage, false);
 
-export default R7;
+module.exports = R7;
