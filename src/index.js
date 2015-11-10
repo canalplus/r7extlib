@@ -302,4 +302,3 @@ R7.onReadyState = _deprecate('onReadyState', ready);
 window.addEventListener('message', onMessage, false);
 
 module.exports = R7;
-window.R7 = R7;

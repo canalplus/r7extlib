@@ -5,6 +5,8 @@ module.exports = {
   output: {
     path: __dirname + '/dist/',
     filename: 'r7extlib.js',
+    library: 'R7',
+    libraryTarget: 'umd',
   },
   module: {
     loaders: [
