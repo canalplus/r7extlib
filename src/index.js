@@ -6,13 +6,6 @@ import './polyfill.js';
 import './history.js';
 import R7IFrame from './embed.js';
 
-function _deprecate(name, fn) {
-  return function() {
-    console.warn('R7 deprecated method ' + name);
-    return fn.apply(null, arguments);
-  };
-}
-
 var AVAILABLE_KEYS = {
   Up: true,
   Down: true,
@@ -57,6 +50,23 @@ function getKey(key) {
 function streamParams(type) {
   var m = type.match(/(\w+):(\w+)/);
   return {source: m[1], event: m[2]};
+}
+
+function addStreamListener(type, callback, context) {
+  if (type === 'focus' || type === 'blur') {
+    _streams[type] = callback.bind(context);
+  } else {
+    send('addStreamListener', streamParams(type));
+    _streams['stream:' + type] = callback.bind(context);
+  }
+}
+
+function removeStreamListener(type) {
+  if (type === 'focus' || type === 'blur') {
+    delete _streams[type];
+  } else {
+    delete _streams['stream:' + type];
+  }
 }
 
 var handlers = {
@@ -164,59 +174,6 @@ function rpc(method, params, callback, context) {
   return uid;
 }
 
-function navigate(route, options, callback, context) {
-  return rpc('navigate', {
-    control: route,
-    context: options,
-  }, callback, context);
-}
-
-function grabKey(key, callback, context) {
-  var k = getKey(key);
-  if (typeof key === 'object') {
-    send('addKeys', key);
-  } else {
-    send('addKeys', [k]);
-  }
-
-  _keys[k] = callback.bind(context);
-}
-
-function releaseKey(key) {
-  key = getKey(key);
-  delete _keys[key];
-  send('removeKeys', [key]);
-}
-
-function ready(callback, context) {
-  window.addEventListener('load', function() {
-    rpc('ready', function(notUsed, response) {
-      if (response) {
-        window.history.init(response.clearHistory);
-      }
-
-      callback.call(context);
-    });
-  }, false);
-}
-
-function addStreamListener(type, callback, context) {
-  if (type === 'focus' || type === 'blur') {
-    _streams[type] = callback.bind(context);
-  } else {
-    send('addStreamListener', streamParams(type));
-    _streams['stream:' + type] = callback.bind(context);
-  }
-}
-
-function removeStreamListener(type) {
-  if (type === 'focus' || type === 'blur') {
-    delete _streams[type];
-  } else {
-    delete _streams['stream:' + type];
-  }
-}
-
 function loadIframe(options, callback, context) {
   if (_iframe) {
     console.error('iframe: already loaded');
@@ -292,34 +249,68 @@ function loadIframe(options, callback, context) {
   });
 }
 
-//Will only work inside an iframe
-function exit() {
-  send('exit');
+class R7 {
+
+  constructor() {
+    this.VERSION = VERSION;
+  }
+
+  ready(callback, context) {
+    window.addEventListener('load', function() {
+      rpc('ready', function(notUsed, response) {
+        if (response) {
+          window.history.init(response.clearHistory);
+        }
+
+        callback.call(context);
+      });
+    }, false);
+  }
+
+  grabKey(key, callback, context) {
+    var k = getKey(key);
+    if (typeof key === 'object') {
+      send('addKeys', key);
+    } else {
+      send('addKeys', [k]);
+    }
+
+    _keys[k] = callback.bind(context);
+  }
+
+  releaseKey(key) {
+    key = getKey(key);
+    delete _keys[key];
+    send('removeKeys', [key]);
+  }
+
+  navigate(route, options, callback, context) {
+    return rpc('navigate', {
+      control: route,
+      context: options,
+    }, callback, context);
+  }
+
+  addStreamListener(type, callback, context) {
+    addStreamListener(type, callback, context);
+  }
+
+  removeStreamListener(type) {
+    removeStreamListener(type);
+  }
+
+  loadIframe(options, callback, context) {
+    loadIframe(options, callback, context);
+  }
+
+  //Will only work inside an iframe
+  exit() {
+    send('exit');
+  }
+
 }
-
-function R7(method, params, callback, context) {
-  return rpc(method, params, callback, context);
-}
-
-R7.version = VERSION;
-
-R7.ready = ready;
-R7.grabKey = grabKey;
-R7.releaseKey = releaseKey;
-R7.navigate = navigate;
-
-R7.addStreamListener = addStreamListener;
-R7.removeStreamListener = removeStreamListener;
-
-R7.loadIframe = loadIframe;
-R7.exit = exit;
-
-// Deprecated methods
-R7.rpc = _deprecate('rpc', deprecatedRPC);
-R7.send = _deprecate('send', deprecatedRPC);
-R7.onReadyState = _deprecate('onReadyState', ready);
 
 // Bind global handler
 window.addEventListener('message', onMessage, false);
 
-module.exports = R7;
+module.exports = new R7();
