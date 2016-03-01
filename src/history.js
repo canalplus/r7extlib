@@ -29,12 +29,12 @@ if (hasSessionStorage()) {
   var __history;
   try {
     __history = JSON.parse(__sessionStorage.getItem('R7History'));
-  } catch (e) {}
+  } catch (e) {
+  }
 
-  __history = __history || Object.assign({}, __defaultHistory);
+  __history = __history || {...{}, ...__defaultHistory};
 
   __history.clear = function() {
-    Object.assign(__history, __defaultHistory);
     __history.save();
   };
 
@@ -120,12 +120,14 @@ if (hasSessionStorage()) {
   };
 
   // Only for boxes (History and its prototype must be rewritten). In chrome, we can only extend prototype
-  window.history = function() {};
+  window.history = function() {
+  };
 
   var __isBox = window.history instanceof Function;
 
   if (__isBox) {
-    window.History = function() {};
+    window.History = function() {
+    };
 
     window.History.prototype = {};
   }
@@ -195,7 +197,9 @@ if (hasSessionStorage()) {
     window.history = new window.History();
   }
 
-  window.addEventListener('hashchange', function() { history.save(); }, false);
+  window.addEventListener('hashchange', function() {
+    history.save();
+  }, false);
 
   if (window.Backbone && window.Backbone.history) {
     window.Backbone.history.history = window.history;

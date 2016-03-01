@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic sample</title>
+    <style>
+        h1 {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1 id="title"></h1>
+<script src="http://192.168.0.29:3002/target/target-script-min.js#ded"></script>
+<script type="text/javascript" src="r7extlib.js"></script>
+<script type="text/javascript">
+    console.log(R7);
+    R7.ready(function() {
+        document.getElementById('title').innerHTML = 'R7 READY WORKS !';
+    })
+</script>
+</body>
+</html>

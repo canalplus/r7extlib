@@ -1,10 +1,7 @@
-'use strict';
-
-const VERSION = '0.2.4';
-
-import './polyfill.js';
 import './history.js';
 import R7IFrame from './embed.js';
+
+const VERSION = '0.2.4';
 
 var AVAILABLE_KEYS = {
   Up: true,
@@ -143,24 +140,6 @@ var send = (function() {
   };
 })();
 
-// !! DEPRECATED !! do not handle errors
-function deprecatedRPC(method, params, callback, context) {
-  if (typeof params === 'function') {
-    context = callback;
-    callback = params;
-    params = null;
-  }
-
-  callback = callback.bind(context);
-
-  var uid = send(method, params);
-  _rpcs[uid] = function(err, res) {
-    callback(err || res);
-  };
-
-  return uid;
-}
-
 function rpc(method, params, callback, context) {
   if (typeof params === 'function') {
     context = callback;
@@ -180,8 +159,8 @@ function loadIframe(options, callback, context) {
     return;
   }
 
-  var keys = Object.assign({}, _keys);
-  var streams = Object.assign({}, _streams);
+  var keys = {...{}, ..._keys};
+  var streams = {...{}, ..._streams};
 
   function clearContext() {
     for (var key in _keys) {

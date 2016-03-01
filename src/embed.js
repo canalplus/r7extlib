@@ -1,5 +1,4 @@
 'use strict';
-
 import Router from './router.js';
 
 /**
@@ -44,13 +43,15 @@ var parseUri = (str) => {
 
   u.queryKey = {};
   u.query.replace(qParser, ($0, $1, $2) => {
-    if ($1) { u.queryKey[$1] = $2; }
+    if ($1) {
+      u.queryKey[$1] = $2;
+    }
   });
 
   return u;
 };
 
-export default class R7IFrame {
+class R7IFrame {
   constructor(options) {
     let url = options.url;
 
@@ -59,7 +60,7 @@ export default class R7IFrame {
       this.iframe.sandbox = SANDBOX;
       this.iframe.src = url;
 
-      let style = Object.assign({}, IFRAME_STYLE, options.style);
+      let style = {...IFRAME_STYLE, ...options.style};
       for (let property in style) {
         this.iframe.style[property] = style[property];
       }
@@ -77,7 +78,9 @@ export default class R7IFrame {
     callback = callback.bind(context);
 
     if (!this.iframe.dataset.loaded) {
-      if (this.timeout) {clearTimeout(this.timeout);}
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
 
       this.timeout =
         setTimeout(this.onTimeoutExpired.bind(this, callback), READY_DELAY);
@@ -106,7 +109,9 @@ export default class R7IFrame {
   }
 
   unload() {
-    if (this.timeout) { clearTimeout(this.timeout); }
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
 
     this.el.removeChild(this.iframe);
     window.removeEventListener('message', this.router, false);
@@ -135,3 +140,5 @@ export default class R7IFrame {
     return this.router.resume();
   }
 }
+
+export default R7IFrame;
