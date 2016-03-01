@@ -1,7 +1,7 @@
 import './history.js';
 import R7IFrame from './embed.js';
 
-const VERSION = '0.2.4';
+const VERSION = '0.2.5';
 
 var AVAILABLE_KEYS = {
   Up: true,
@@ -228,68 +228,58 @@ function loadIframe(options, callback, context) {
   });
 }
 
-class R7 {
-
-  constructor() {
-    this.VERSION = VERSION;
-  }
-
-  ready(callback, context) {
-    window.addEventListener('load', function() {
-      rpc('ready', function(notUsed, response) {
-        if (response) {
-          window.history.init(response.clearHistory);
-        }
-
-        callback.call(context);
-      });
-    }, false);
-  }
-
-  grabKey(key, callback, context) {
-    var k = getKey(key);
-    if (typeof key === 'object') {
-      send('addKeys', key);
-    } else {
-      send('addKeys', [k]);
-    }
-
-    _keys[k] = callback.bind(context);
-  }
-
-  releaseKey(key) {
-    key = getKey(key);
-    delete _keys[key];
-    send('removeKeys', [key]);
-  }
-
-  navigate(route, options, callback, context) {
-    return rpc('navigate', {
-      control: route,
-      context: options,
-    }, callback, context);
-  }
-
-  addStreamListener(type, callback, context) {
-    addStreamListener(type, callback, context);
-  }
-
-  removeStreamListener(type) {
-    removeStreamListener(type);
-  }
-
-  loadIframe(options, callback, context) {
-    loadIframe(options, callback, context);
-  }
-
-  //Will only work inside an iframe
-  exit() {
-    send('exit');
-  }
-
+function R7(method, params, callback, context) {
+  return rpc(method, params, callback, context);
 }
+
+R7.VERSION = VERSION;
+
+R7.ready = function(callback, context) {
+  window.addEventListener('load', function() {
+    rpc('ready', function(notUsed, response) {
+      if (response) {
+        window.history.init(response.clearHistory);
+      }
+
+      callback.call(context);
+    });
+  }, false);
+};
+
+R7.grabKey = function(key, callback, context) {
+  var k = getKey(key);
+  if (typeof key === 'object') {
+    send('addKeys', key);
+  } else {
+    send('addKeys', [k]);
+  }
+
+  _keys[k] = callback.bind(context);
+};
+
+R7.releaseKey = function(key) {
+  key = getKey(key);
+  delete _keys[key];
+  send('removeKeys', [key]);
+};
+
+R7.navigate = function(route, options, callback, context) {
+  return rpc('navigate', {
+    control: route,
+    context: options,
+  }, callback, context);
+};
+
+R7.addStreamListener = addStreamListener;
+
+R7.removeStreamListener = removeStreamListener;
+
+R7.loadIframe = loadIframe;
+
+//Will only work inside an iframe
+R7.exit = () => send('exit');
 
 // Bind global handler
 window.addEventListener('message', onMessage, false);
 
-module.exports = new R7();
+module.exports = R7;
