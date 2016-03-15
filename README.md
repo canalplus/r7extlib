@@ -7,6 +7,7 @@ required.
 ## Versions
 
 STABLE : 0.1.9
+
 DEV(ES6 compatible) : 0.2.5
 
 ## Build
