@@ -4,6 +4,11 @@ Easy interaction with R7 box for external webapps
 Include the `dist/r7extlib.js` file in your webapp to use it. No build process is
 required.
 
+## Versions
+
+STABLE : 0.1.9
+DEV(ES6 compatible) : 0.2.5
+
 ## Build
 
 In order to build this application on your own:
