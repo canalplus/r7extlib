@@ -202,7 +202,11 @@
     window.addEventListener('load', function() {
       rpc('ready', function(notUsed, response) {
         if (response) {
-          window.history.init(response.clearHistory);
+          try {
+            window.history.init(response.clearHistory);
+          } catch (e) {
+            console.error(e);
+          }
         }
 
         _bind(callback, context)();

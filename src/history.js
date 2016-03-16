@@ -20,7 +20,7 @@
   };
 
   if (!hasSessionStorage()) {
-    console.warn('History can not be rewritten: window.sessionStorage not available!');
+    console.error('window.sessionStorage not available! History will not be fully available.');
     return;
   }
 
