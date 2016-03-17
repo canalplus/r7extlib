@@ -1,3 +1,6 @@
+# v0.2.1
+* Fix messages if browser has no sessionStorage
+
 # v0.2.0
 * Add history polyfill
 * Fix files for matching jscs rules
