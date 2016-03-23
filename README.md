@@ -6,7 +6,7 @@ required.
 
 ## Versions
 
-STABLE : 0.1.8
+STABLE : 0.2.1
 
 DEV(ES6 compatible) : 0.2.5
 
