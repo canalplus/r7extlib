@@ -6,9 +6,9 @@ required.
 
 ## Versions
 
-STABLE : 0.2.1
+STABLE : 0.2.6
 
-DEV(ES6 compatible) : 0.2.5
+DEV(ES6 compatible) : es6-webpack branch
 
 ## Build
 
