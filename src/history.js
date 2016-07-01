@@ -1,6 +1,15 @@
 (function(exports) {
   'use strict';
 
+  // Only for boxes (History and its prototype must be rewritten). In chrome, we can only extend prototype
+  try {
+    window.history = function() {};
+  } catch (e) {
+    console.warn('window.history is readonly. History will not be fully available.');
+    console.warn(e);
+    return;
+  }
+
   var _ = require('lodash');
 
   // Check if SessionStorage is available
@@ -121,9 +130,6 @@
     return __sessionStorage.setItem('R7History', JSON.stringify(this));
   };
 
-  // Only for boxes (History and its prototype must be rewritten). In chrome, we can only extend prototype
-  window.history = function() {};
-
   var __isBox = window.history instanceof Function;
 
   if (__isBox) {
@@ -191,10 +197,23 @@
 
   //Only for boxes (History and its prototype must be rewritten).
   if (__isBox) {
-    window.history = new window.History();
+    try {
+      window.history = new window.History();
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
-  window.addEventListener('hashchange', function() { history.save(); }, false);
+  window.addEventListener(
+    'hashchange', function() {
+      try {
+        history.save();
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    false
+  );
 
   if (window.Backbone && window.Backbone.history) {
     window.Backbone.history.history = window.history;
