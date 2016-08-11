@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.2.6",
   "description": "Easy interaction with Canal+ R7 box for external webapps",
-  "main": "r7extlib.js",
+  "main": "dist/r7extlib.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/canalplus/r7extlib.git"
