@@ -13,6 +13,7 @@
   "newcap": true,
   "validthis": false,
   "predef": [
+    "module",
     "require",
     "R7",
     "describe","before","beforeEach","after","afterEach","it","xit","expect"
