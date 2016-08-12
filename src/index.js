@@ -1,4 +1,4 @@
-(function() {
+(function(module, require) {
   'use strict';
 
   var VERSION = '0.1.9';
@@ -319,4 +319,6 @@
 
   window.R7 = R7;
 
-})();
+  module.exports = R7;
+
+})(module, require);
