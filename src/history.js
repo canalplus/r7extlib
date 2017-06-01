@@ -121,7 +121,14 @@
     return __sessionStorage.setItem('R7History', JSON.stringify(this));
   };
 
-  // Only for boxes (History and its prototype must be rewritten). In chrome, we can only extend prototype
+  // FIX only for chrome (window.history is readonly)
+  if (Object.defineProperty) {
+    Object.defineProperty(window, 'history', {
+      enumerable: false,
+      writable: true,
+      configurable: false
+    });
+  }
   window.history = function() {};
 
   var __isBox = window.history instanceof Function;
