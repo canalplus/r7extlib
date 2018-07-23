@@ -12,7 +12,12 @@
     "url": "https://github.com/canalplus/r7extlib/issues"
   },
   "homepage": "https://github.com/canalplus/r7extlib",
+  "scripts": {
+    "build": "bower install && gulp",
+    "test": "bower install && gulp test"
+  },
   "devDependencies": {
+    "bower": "^1.8.4",
     "chai": "^3.4.0",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
