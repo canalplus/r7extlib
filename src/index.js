@@ -205,7 +205,7 @@
           try {
             window.history.init(response.clearHistory);
           } catch (e) {
-            console.error(e);
+            console.warn(e);
           }
         }
 
