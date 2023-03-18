@@ -1,7 +1,7 @@
 {
   "name": "r7extlib",
   "private": true,
-  "version": "0.2.6",
+  "version": "0.2.8",
   "description": "Easy interaction with Canal+ R7 box for external webapps",
   "main": "dist/r7extlib.js",
   "repository": {
@@ -12,7 +12,12 @@
     "url": "https://github.com/canalplus/r7extlib/issues"
   },
   "homepage": "https://github.com/canalplus/r7extlib",
+  "scripts": {
+    "build": "bower install && gulp",
+    "test": "bower install && gulp test"
+  },
   "devDependencies": {
+    "bower": "^1.8.4",
     "chai": "^3.4.0",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
@@ -22,7 +27,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-rimraf": "^0.1.1",
     "gulp-uglify": "^1.4.2",
-    "lodash": "^2.4.1",
+    "lodash": "^4.17.11",
     "mocha": "^2.3.3",
     "q": "^1.1.2",
     "sinon": "^1.17.2",
